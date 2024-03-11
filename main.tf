@@ -36,6 +36,12 @@ resource "azurerm_search_service" "example" {
   tags = local.tags
 }
 
+resource "azurerm_key_vault_secret" "AZURE_SEARCH_SERVICE_KEY" {
+  name         = "AZURE-SEARCH-SERVICE-KEY"
+  value        = azurerm_search_service.example.primary_key
+  key_vault_id = azurerm_key_vault.example.id
+}
+
 resource "azurerm_cosmosdb_account" "example" {
   name                = "infoasst-cosmos-geprk"
   location            = azurerm_resource_group.example.location
