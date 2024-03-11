@@ -100,7 +100,7 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_SEARCH_SERVICE"                  = azurerm_search_service.example.name
     "AZURE_SEARCH_SERVICE_ENDPOINT"         = "https://${azurerm_search_service.example.name}.search.windows.net/"
     "AZURE_SEARCH_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
-    "AZURE_SUBSCRIPTION_ID"                 = "070cfebd-3e63-42a5-ba50-58de1db7496e"
+    "AZURE_SUBSCRIPTION_ID"                 = data.azurerm_client_config.current.subscription_id
     "AZURE_TENANT_ID"                       = data.azurerm_client_config.current.tenant_id
     "CHAT_WARNING_BANNER_TEXT"              = ""
     "COSMOSDB_KEY"                          = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/COSMOSDB-KEY)"
