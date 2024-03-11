@@ -66,6 +66,55 @@ resource "azurerm_cosmosdb_account" "example" {
   tags = local.tags
 }
 
+
+resource "azurerm_cosmosdb_sql_database" "log" {
+  name                = "statusdb"
+  resource_group_name = azurerm_cosmosdb_account.example.resource_group_name
+  account_name        = azurerm_cosmosdb_account.example.name
+}
+
+resource "azurerm_cosmosdb_sql_container" "log" {
+  name                  = "statuscontainer"
+  resource_group_name   = azurerm_cosmosdb_account.example.resource_group_name
+  account_name          = azurerm_cosmosdb_account.example.name
+  database_name         = azurerm_cosmosdb_sql_database.log.name
+  partition_key_path    = "/file_path"
+  partition_key_version = 1
+  throughput            = 1000
+
+  indexing_policy {
+    indexing_mode = "consistent"
+
+    included_path {
+      path = "/*"
+    }
+  }
+}
+
+resource "azurerm_cosmosdb_sql_database" "tag" {
+  name                = "tagdb"
+  resource_group_name = azurerm_cosmosdb_account.example.resource_group_name
+  account_name        = azurerm_cosmosdb_account.example.name
+}
+
+resource "azurerm_cosmosdb_sql_container" "tag" {
+  name                  = "tagcontainer"
+  resource_group_name   = azurerm_cosmosdb_account.example.resource_group_name
+  account_name          = azurerm_cosmosdb_account.example.name
+  database_name         = azurerm_cosmosdb_sql_database.tag.name
+  partition_key_path    = "/file_path"
+  partition_key_version = 1
+  throughput            = 1000
+
+  indexing_policy {
+    indexing_mode = "consistent"
+
+    included_path {
+      path = "/*"
+    }
+  }
+}
+
 resource "azurerm_key_vault_secret" "COSMOSDB_KEY" {
   name         = "COSMOSDB-KEY"
   value        = azurerm_cosmosdb_account.example.primary_key
