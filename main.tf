@@ -119,7 +119,7 @@ resource "azurerm_linux_web_app" "web" {
     "COSMOSDB_LOG_DATABASE_NAME"            = "statusdb"
     "COSMOSDB_TAGS_CONTAINER_NAME"          = "tagcontainer"
     "COSMOSDB_TAGS_DATABASE_NAME"           = "tagdb"
-    "COSMOSDB_URL"                          = "https://infoasst-cosmos-geprk.documents.azure.com:443/"
+    "COSMOSDB_URL"                          = azurerm_cosmosdb_account.example.endpoint
     "EMBEDDING_DEPLOYMENT_NAME"             = "text-embedding-ada-002"
     "ENABLE_ORYX_BUILD"                     = "True"
     "ENRICHMENT_APPSERVICE_NAME"            = "infoasst-enrichmentweb-geprk"
@@ -281,7 +281,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     "COSMOSDB_LOG_DATABASE_NAME"             = "statusdb"
     "COSMOSDB_TAGS_CONTAINER_NAME"           = "tagcontainer"
     "COSMOSDB_TAGS_DATABASE_NAME"            = "tagdb"
-    "COSMOSDB_URL"                           = "https://infoasst-cosmos-geprk.documents.azure.com:443/"
+    "COSMOSDB_URL"                           = azurerm_cosmosdb_account.example.endpoint
     "DEQUEUE_MESSAGE_BATCH_SIZE"             = "3"
     "EMBEDDINGS_QUEUE"                       = "embeddings-queue"
     "EMBEDDING_REQUEUE_BACKOFF"              = "60"
@@ -403,7 +403,7 @@ resource "azurerm_linux_function_app" "example" {
     "COSMOSDB_LOG_DATABASE_NAME"                 = "statusdb"
     "COSMOSDB_TAGS_CONTAINER_NAME"               = "tagcontainer"
     "COSMOSDB_TAGS_DATABASE_NAME"                = "tagdb"
-    "COSMOSDB_URL"                               = "https://infoasst-cosmos-geprk.documents.azure.com:443/"
+    "COSMOSDB_URL"                               = azurerm_cosmosdb_account.example.endpoint
     "EMBEDDINGS_QUEUE"                           = "embeddings-queue"
     "ENABLE_DEV_CODE"                            = "False"
     "ENRICHMENT_BACKOFF"                         = "60"
