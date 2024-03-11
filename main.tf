@@ -79,7 +79,7 @@ resource "azurerm_linux_web_app" "web" {
     "APPINSIGHTS_INSTRUMENTATIONKEY"        = azurerm_application_insights.example.instrumentation_key
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.example.connection_string
     "APPLICATION_TITLE"                     = ""
-    "AZURE_BLOB_STORAGE_ACCOUNT"            = "infoasststoregeprk"
+    "AZURE_BLOB_STORAGE_ACCOUNT"            = azurerm_storage_account.infoasststoregeprk.name
     "AZURE_BLOB_STORAGE_CONTAINER"          = "content"
     "AZURE_BLOB_STORAGE_ENDPOINT"           = "https://infoasststoregeprk.blob.core.windows.net/"
     "AZURE_BLOB_STORAGE_KEY"                = "@Microsoft.KeyVault(SecretUri=https://infoasst-kv-geprk.vault.azure.net/secrets/AZURE-BLOB-STORAGE-KEY)"
@@ -244,7 +244,7 @@ resource "azurerm_linux_web_app" "enrichment" {
 
   app_settings = {
     "APPLICATIONINSIGHTS_CONNECTION_STRING"  = azurerm_application_insights.example.connection_string
-    "AZURE_BLOB_STORAGE_ACCOUNT"             = "infoasststoregeprk"
+    "AZURE_BLOB_STORAGE_ACCOUNT"             = azurerm_storage_account.infoasststoregeprk.name
     "AZURE_BLOB_STORAGE_CONTAINER"           = "content"
     "AZURE_BLOB_STORAGE_ENDPOINT"            = "https://infoasststoregeprk.blob.core.windows.net/"
     "AZURE_BLOB_STORAGE_KEY"                 = "@Microsoft.KeyVault(SecretUri=https://infoasst-kv-geprk.vault.azure.net/secrets/AZURE-BLOB-STORAGE-KEY)"
@@ -368,7 +368,7 @@ resource "azurerm_linux_function_app" "example" {
     "AZURE_SEARCH_SERVICE_ENDPOINT"              = "https://infoasst-search-geprk.search.windows.net/"
     "AZURE_SEARCH_SERVICE_KEY"                   = "@Microsoft.KeyVault(SecretUri=https://infoasst-kv-geprk.vault.azure.net/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "BLOB_CONNECTION_STRING"                     = "@Microsoft.KeyVault(SecretUri=https://infoasst-kv-geprk.vault.azure.net/secrets/BLOB-CONNECTION-STRING)"
-    "BLOB_STORAGE_ACCOUNT"                       = "infoasststoregeprk"
+    "BLOB_STORAGE_ACCOUNT"                       = azurerm_storage_account.infoasststoregeprk.name
     "BLOB_STORAGE_ACCOUNT_ENDPOINT"              = "https://infoasststoregeprk.blob.core.windows.net/"
     "BLOB_STORAGE_ACCOUNT_LOG_CONTAINER_NAME"    = "logs"
     "BLOB_STORAGE_ACCOUNT_OUTPUT_CONTAINER_NAME" = "content"
