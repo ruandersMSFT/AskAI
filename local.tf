@@ -7,6 +7,7 @@ locals {
   COSMOSDB_TAGS_CONTAINER_NAME = "tagcontainer"
   COSMOSDB_TAGS_DATABASE_NAME  = "tagdb"
 
+  AZURE_BLOB_STORAGE_UPLOAD_CONTAINER = "upload"
 
   tags = {
     "FISMA_Id"      = ""

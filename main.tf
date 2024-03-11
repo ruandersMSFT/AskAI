@@ -145,7 +145,7 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_BLOB_STORAGE_CONTAINER"          = "content"
     "AZURE_BLOB_STORAGE_ENDPOINT"           = "https://infoasststoregeprk.blob.core.windows.net/"
     "AZURE_BLOB_STORAGE_KEY"                = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
-    "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"   = "upload"
+    "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"   = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "AZURE_CLIENT_ID"                       = local.azure_client_id
     "AZURE_CLIENT_SECRET"                   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-CLIENT-SECRET)"
     "AZURE_KEY_VAULT_ENDPOINT"              = azurerm_key_vault.example.vault_uri
@@ -310,7 +310,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     "AZURE_BLOB_STORAGE_CONTAINER"           = "content"
     "AZURE_BLOB_STORAGE_ENDPOINT"            = "https://infoasststoregeprk.blob.core.windows.net/"
     "AZURE_BLOB_STORAGE_KEY"                 = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
-    "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"    = "upload"
+    "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"    = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "AZURE_KEY_VAULT_ENDPOINT"               = azurerm_key_vault.example.vault_uri
     "AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME" = "text-embedding-ada-002"
     "AZURE_OPENAI_SERVICE"                   = "infoasst-aoai-geprk"
@@ -434,7 +434,7 @@ resource "azurerm_linux_function_app" "example" {
     "BLOB_STORAGE_ACCOUNT_ENDPOINT"              = "https://infoasststoregeprk.blob.core.windows.net/"
     "BLOB_STORAGE_ACCOUNT_LOG_CONTAINER_NAME"    = "logs"
     "BLOB_STORAGE_ACCOUNT_OUTPUT_CONTAINER_NAME" = "content"
-    "BLOB_STORAGE_ACCOUNT_UPLOAD_CONTAINER_NAME" = "upload"
+    "BLOB_STORAGE_ACCOUNT_UPLOAD_CONTAINER_NAME" = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "CHUNK_TARGET_SIZE"                          = "750"
     "COSMOSDB_KEY"                               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/COSMOSDB-KEY)"
     "COSMOSDB_LOG_CONTAINER_NAME"                = local.COSMOSDB_LOG_CONTAINER_NAME
@@ -606,6 +606,36 @@ resource "azurerm_storage_account" "infoasststoregeprk" {
   allow_nested_items_to_be_public = false
 
   tags = local.tags
+}
+
+resource "azurerm_storage_container" "content" {
+  name                  = "content"
+  storage_account_name  = azurerm_storage_account.infoasststoregeprk.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "logs" {
+  name                  = "logs"
+  storage_account_name  = azurerm_storage_account.infoasststoregeprk.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "function" {
+  name                  = "function"
+  storage_account_name  = azurerm_storage_account.infoasststoregeprk.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "upload" {
+  name                  = "upload"
+  storage_account_name  = azurerm_storage_account.infoasststoregeprk.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "website" {
+  name                  = "website"
+  storage_account_name  = azurerm_storage_account.infoasststoregeprk.name
+  container_access_type = "private"
 }
 
 resource "azurerm_key_vault_secret" "AZURE_BLOB_STORAGE_KEY" {
