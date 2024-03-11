@@ -490,6 +490,12 @@ resource "azurerm_cognitive_account" "form_recognizer" {
   tags = local.tags
 }
 
+resource "azurerm_key_vault_secret" "AZURE_FORM_RECOGNIZER_KEY" {
+  name         = "AZURE-FORM-RECOGNIZER-KEY"
+  value        = azurerm_cognitive_account.form_recognizer.primary_access_key
+  key_vault_id = azurerm_key_vault.example.id
+}
+
 resource "azurerm_cognitive_account" "enrichment" {
   name                       = "infoasst-enrichment-cog-geprk"
   location                   = azurerm_resource_group.example.location
