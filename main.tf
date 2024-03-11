@@ -84,7 +84,7 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_BLOB_STORAGE_ENDPOINT"           = "https://infoasststoregeprk.blob.core.windows.net/"
     "AZURE_BLOB_STORAGE_KEY"                = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
     "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"   = "upload"
-    "AZURE_CLIENT_ID"                       = "3aff5d4e-1f13-4a7d-947e-612aae549f5d"
+    "AZURE_CLIENT_ID"                       = local.azure_client_id
     "AZURE_CLIENT_SECRET"                   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-CLIENT-SECRET)"
     "AZURE_KEY_VAULT_ENDPOINT"              = azurerm_key_vault.example.vault_uri
     "AZURE_MANAGEMENT_URL"                  = local.management_url
@@ -362,7 +362,7 @@ resource "azurerm_linux_function_app" "example" {
 
   app_settings = {
     "AZURE_BLOB_STORAGE_KEY"                     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
-    "AZURE_FORM_RECOGNIZER_ENDPOINT"             = "https://infoasst-fr-geprk.cognitiveservices.azure.com/"
+    "AZURE_FORM_RECOGNIZER_ENDPOINT"             = "https://${azurerm_cognitive_account.form_recognizer.name}.cognitiveservices.azure.com/"
     "AZURE_FORM_RECOGNIZER_KEY"                  = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-FORM-RECOGNIZER-KEY)"
     "AZURE_SEARCH_INDEX"                         = "vector-index"
     "AZURE_SEARCH_SERVICE_ENDPOINT"              = "https://${azurerm_search_service.example.name}.search.windows.net/"
@@ -472,7 +472,7 @@ resource "azurerm_cognitive_account" "example" {
   tags = local.tags
 }
 
-resource "azurerm_cognitive_account" "example2" {
+resource "azurerm_cognitive_account" "form_recognizer" {
   name                  = "infoasst-fr-geprk"
   location              = azurerm_resource_group.example.location
   resource_group_name   = azurerm_resource_group.example.name
