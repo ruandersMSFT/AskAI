@@ -490,7 +490,7 @@ resource "azurerm_cognitive_account" "form_recognizer" {
   tags = local.tags
 }
 
-resource "azurerm_cognitive_account" "example3" {
+resource "azurerm_cognitive_account" "enrichment" {
   name                       = "infoasst-enrichment-cog-geprk"
   location                   = azurerm_resource_group.example.location
   resource_group_name        = azurerm_resource_group.example.name
@@ -500,6 +500,12 @@ resource "azurerm_cognitive_account" "example3" {
   sku_name                   = "S0"
 
   tags = local.tags
+}
+
+resource "azurerm_key_vault_secret" "ENRICHMENT_KEY" {
+  name         = "ENRICHMENT-KEY"
+  value        = azurerm_cognitive_account.enrichment.primary_access_key
+  key_vault_id = azurerm_key_vault.example.id
 }
 
 resource "azurerm_log_analytics_workspace" "example" {
