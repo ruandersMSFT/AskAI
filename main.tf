@@ -97,8 +97,8 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_OPENAI_SERVICE"                  = "infoasst-aoai-geprk"
     "AZURE_OPENAI_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                    = "vector-index"
-    "AZURE_SEARCH_SERVICE"                  = "infoasst-search-geprk"
-    "AZURE_SEARCH_SERVICE_ENDPOINT"         = "https://infoasst-search-geprk.search.windows.net/"
+    "AZURE_SEARCH_SERVICE"                  = azurerm_search_service.example.name
+    "AZURE_SEARCH_SERVICE_ENDPOINT"         = "https://${azurerm_search_service.example.name}.search.windows.net/"
     "AZURE_SEARCH_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "AZURE_SUBSCRIPTION_ID"                 = "070cfebd-3e63-42a5-ba50-58de1db7496e"
     "AZURE_TENANT_ID"                       = data.azurerm_client_config.current.tenant_id
@@ -254,7 +254,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     "AZURE_OPENAI_SERVICE"                   = "infoasst-aoai-geprk"
     "AZURE_OPENAI_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                     = "vector-index"
-    "AZURE_SEARCH_SERVICE"                   = "infoasst-search-geprk"
+    "AZURE_SEARCH_SERVICE"                   = azurerm_search_service.example.name
     "AZURE_SEARCH_SERVICE_ENDPOINT"          = "https://infoasst-search-geprk.search.windows.net/"
     "AZURE_SEARCH_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "BLOB_CONNECTION_STRING"                 = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
@@ -365,7 +365,7 @@ resource "azurerm_linux_function_app" "example" {
     "AZURE_FORM_RECOGNIZER_ENDPOINT"             = "https://infoasst-fr-geprk.cognitiveservices.azure.com/"
     "AZURE_FORM_RECOGNIZER_KEY"                  = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-FORM-RECOGNIZER-KEY)"
     "AZURE_SEARCH_INDEX"                         = "vector-index"
-    "AZURE_SEARCH_SERVICE_ENDPOINT"              = "https://infoasst-search-geprk.search.windows.net/"
+    "AZURE_SEARCH_SERVICE_ENDPOINT"              = "https://${azurerm_search_service.example.name}.search.windows.net/"
     "AZURE_SEARCH_SERVICE_KEY"                   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "BLOB_CONNECTION_STRING"                     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
     "BLOB_STORAGE_ACCOUNT"                       = azurerm_storage_account.infoasststoregeprk.name
