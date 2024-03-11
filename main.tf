@@ -460,7 +460,7 @@ resource "azurerm_linux_function_app" "example" {
   tags = local.tags
 }
 
-resource "azurerm_cognitive_account" "example" {
+resource "azurerm_cognitive_account" "open_ai" {
   name                  = "infoasst-aoai-geprk"
   location              = azurerm_resource_group.example.location
   resource_group_name   = azurerm_resource_group.example.name
@@ -470,6 +470,12 @@ resource "azurerm_cognitive_account" "example" {
   sku_name = "S0"
 
   tags = local.tags
+}
+
+resource "azurerm_key_vault_secret" "AZURE_OPENAI_SERVICE_KEY" {
+  name         = "AZURE-OPENAI-SERVICE-KEY"
+  value        = azurerm_cognitive_account.open_ai.primary_access_key
+  key_vault_id = azurerm_key_vault.example.id
 }
 
 resource "azurerm_cognitive_account" "form_recognizer" {
