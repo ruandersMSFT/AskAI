@@ -68,13 +68,13 @@ resource "azurerm_cosmosdb_account" "example" {
 
 
 resource "azurerm_cosmosdb_sql_database" "log" {
-  name                = "statusdb"
+  name                = local.COSMOSDB_LOG_DATABASE_NAME
   resource_group_name = azurerm_cosmosdb_account.example.resource_group_name
   account_name        = azurerm_cosmosdb_account.example.name
 }
 
 resource "azurerm_cosmosdb_sql_container" "log" {
-  name                  = "statuscontainer"
+  name                  = local.COSMOSDB_LOG_CONTAINER_NAME
   resource_group_name   = azurerm_cosmosdb_account.example.resource_group_name
   account_name          = azurerm_cosmosdb_account.example.name
   database_name         = azurerm_cosmosdb_sql_database.log.name
@@ -92,13 +92,13 @@ resource "azurerm_cosmosdb_sql_container" "log" {
 }
 
 resource "azurerm_cosmosdb_sql_database" "tag" {
-  name                = "tagdb"
+  name                = local.COSMOSDB_TAGS_DATABASE_NAME
   resource_group_name = azurerm_cosmosdb_account.example.resource_group_name
   account_name        = azurerm_cosmosdb_account.example.name
 }
 
 resource "azurerm_cosmosdb_sql_container" "tag" {
-  name                  = "tagcontainer"
+  name                  = local.COSMOSDB_TAGS_CONTAINER_NAME
   resource_group_name   = azurerm_cosmosdb_account.example.resource_group_name
   account_name          = azurerm_cosmosdb_account.example.name
   database_name         = azurerm_cosmosdb_sql_database.tag.name
@@ -166,10 +166,10 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_TENANT_ID"                       = data.azurerm_client_config.current.tenant_id
     "CHAT_WARNING_BANNER_TEXT"              = ""
     "COSMOSDB_KEY"                          = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/COSMOSDB-KEY)"
-    "COSMOSDB_LOG_CONTAINER_NAME"           = "statuscontainer"
-    "COSMOSDB_LOG_DATABASE_NAME"            = "statusdb"
-    "COSMOSDB_TAGS_CONTAINER_NAME"          = "tagcontainer"
-    "COSMOSDB_TAGS_DATABASE_NAME"           = "tagdb"
+    "COSMOSDB_LOG_CONTAINER_NAME"           = local.COSMOSDB_LOG_CONTAINER_NAME
+    "COSMOSDB_LOG_DATABASE_NAME"            = local.COSMOSDB_LOG_DATABASE_NAME
+    "COSMOSDB_TAGS_CONTAINER_NAME"          = local.COSMOSDB_TAGS_CONTAINER_NAME
+    "COSMOSDB_TAGS_DATABASE_NAME"           = local.COSMOSDB_TAGS_DATABASE_NAME
     "COSMOSDB_URL"                          = azurerm_cosmosdb_account.example.endpoint
     "EMBEDDING_DEPLOYMENT_NAME"             = "text-embedding-ada-002"
     "ENABLE_ORYX_BUILD"                     = "True"
@@ -321,10 +321,10 @@ resource "azurerm_linux_web_app" "enrichment" {
     "AZURE_SEARCH_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "BLOB_CONNECTION_STRING"                 = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
     "COSMOSDB_KEY"                           = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/COSMOSDB-KEY)"
-    "COSMOSDB_LOG_CONTAINER_NAME"            = "statuscontainer"
-    "COSMOSDB_LOG_DATABASE_NAME"             = "statusdb"
-    "COSMOSDB_TAGS_CONTAINER_NAME"           = "tagcontainer"
-    "COSMOSDB_TAGS_DATABASE_NAME"            = "tagdb"
+    "COSMOSDB_LOG_CONTAINER_NAME"            = local.COSMOSDB_LOG_CONTAINER_NAME
+    "COSMOSDB_LOG_DATABASE_NAME"             = local.COSMOSDB_LOG_DATABASE_NAME
+    "COSMOSDB_TAGS_CONTAINER_NAME"           = local.COSMOSDB_TAGS_CONTAINER_NAME
+    "COSMOSDB_TAGS_DATABASE_NAME"            = local.COSMOSDB_TAGS_DATABASE_NAME
     "COSMOSDB_URL"                           = azurerm_cosmosdb_account.example.endpoint
     "DEQUEUE_MESSAGE_BATCH_SIZE"             = "3"
     "EMBEDDINGS_QUEUE"                       = "embeddings-queue"
@@ -437,10 +437,10 @@ resource "azurerm_linux_function_app" "example" {
     "BLOB_STORAGE_ACCOUNT_UPLOAD_CONTAINER_NAME" = "upload"
     "CHUNK_TARGET_SIZE"                          = "750"
     "COSMOSDB_KEY"                               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/COSMOSDB-KEY)"
-    "COSMOSDB_LOG_CONTAINER_NAME"                = "statuscontainer"
-    "COSMOSDB_LOG_DATABASE_NAME"                 = "statusdb"
-    "COSMOSDB_TAGS_CONTAINER_NAME"               = "tagcontainer"
-    "COSMOSDB_TAGS_DATABASE_NAME"                = "tagdb"
+    "COSMOSDB_LOG_CONTAINER_NAME"                = local.COSMOSDB_LOG_CONTAINER_NAME
+    "COSMOSDB_LOG_DATABASE_NAME"                 = local.COSMOSDB_LOG_DATABASE_NAME
+    "COSMOSDB_TAGS_CONTAINER_NAME"               = local.COSMOSDB_TAGS_CONTAINER_NAME
+    "COSMOSDB_TAGS_DATABASE_NAME"                = local.COSMOSDB_TAGS_DATABASE_NAME
     "COSMOSDB_URL"                               = azurerm_cosmosdb_account.example.endpoint
     "EMBEDDINGS_QUEUE"                           = "embeddings-queue"
     "ENABLE_DEV_CODE"                            = "False"
