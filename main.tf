@@ -87,8 +87,8 @@ resource "azurerm_linux_web_app" "web" {
   service_plan_id     = azurerm_service_plan.example1.id
 
   app_settings = {
-    "APPINSIGHTS_INSTRUMENTATIONKEY"        = "f77e20e5-c141-4b2a-a70b-819cfeac26b7"
-    "APPLICATIONINSIGHTS_CONNECTION_STRING" = "InstrumentationKey=f77e20e5-c141-4b2a-a70b-819cfeac26b7;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/"
+    "APPINSIGHTS_INSTRUMENTATIONKEY"        = azurerm_application_insights.example.instrumentation_key
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.example.connection_string
     "APPLICATION_TITLE"                     = ""
     "AZURE_BLOB_STORAGE_ACCOUNT"            = "infoasststoregeprk"
     "AZURE_BLOB_STORAGE_CONTAINER"          = "content"
@@ -261,7 +261,7 @@ resource "azurerm_linux_web_app" "enrichment" {
   service_plan_id     = azurerm_service_plan.example2.id
 
   app_settings = {
-    "APPLICATIONINSIGHTS_CONNECTION_STRING"  = "InstrumentationKey=f77e20e5-c141-4b2a-a70b-819cfeac26b7;IngestionEndpoint=https://eastus-8.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus.livediagnostics.monitor.azure.com/"
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"  = azurerm_application_insights.example.connection_string
     "AZURE_BLOB_STORAGE_ACCOUNT"             = "infoasststoregeprk"
     "AZURE_BLOB_STORAGE_CONTAINER"           = "content"
     "AZURE_BLOB_STORAGE_ENDPOINT"            = "https://infoasststoregeprk.blob.core.windows.net/"
