@@ -638,6 +638,41 @@ resource "azurerm_storage_container" "website" {
   container_access_type = "private"
 }
 
+resource "azurerm_storage_queue" "pdf_submit_queue" {
+  name                 = "pdf-submit-queue"
+  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+}
+
+resource "azurerm_storage_queue" "pdf_polling_queue" {
+  name                 = "pdf-polling-queue"
+  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+}
+
+resource "azurerm_storage_queue" "non_pdf_submit_queue" {
+  name                 = "non-pdf-submit-queue"
+  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+}
+
+resource "azurerm_storage_queue" "media_submit_queue" {
+  name                 = "media-submit-queue"
+  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+}
+
+resource "azurerm_storage_queue" "text_enrichment_queue" {
+  name                 = "text-enrichment-queue"
+  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+}
+
+resource "azurerm_storage_queue" "image_enrichment_queue" {
+  name                 = "image-enrichment-queue"
+  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+}
+
+resource "azurerm_storage_queue" "embeddings_queue" {
+  name                 = "embeddings-queue"
+  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+}
+
 resource "azurerm_key_vault_secret" "AZURE_BLOB_STORAGE_KEY" {
   name         = "AZURE-BLOB-STORAGE-KEY"
   value        = azurerm_storage_account.infoasststoregeprk.primary_access_key
