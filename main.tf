@@ -605,6 +605,12 @@ resource "azurerm_storage_account" "infoasststoregeprk" {
   account_replication_type        = "LRS"
   allow_nested_items_to_be_public = false
 
+  blob_properties {
+    delete_retention_policy {
+      days = 7
+    }
+  }
+
   tags = local.tags
 }
 
@@ -692,6 +698,12 @@ resource "azurerm_storage_account" "infoasststoremediageprk" {
   account_tier                    = "Standard"
   account_replication_type        = "LRS"
   allow_nested_items_to_be_public = false
+
+  blob_properties {
+    delete_retention_policy {
+      days = 7
+    }
+  }
 
   tags = local.tags
 }
