@@ -87,7 +87,7 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_CLIENT_ID"                       = "3aff5d4e-1f13-4a7d-947e-612aae549f5d"
     "AZURE_CLIENT_SECRET"                   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-CLIENT-SECRET)"
     "AZURE_KEY_VAULT_ENDPOINT"              = azurerm_key_vault.example.vault_uri
-    "AZURE_MANAGEMENT_URL"                  = "https://management.core.windows.net/"
+    "AZURE_MANAGEMENT_URL"                  = local.management_url
     "AZURE_OPENAI_CHATGPT_DEPLOYMENT"       = "gpt-35-turbo-16k"
     "AZURE_OPENAI_CHATGPT_MODEL_NAME"       = ""
     "AZURE_OPENAI_CHATGPT_MODEL_VERSION"    = ""
