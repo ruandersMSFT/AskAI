@@ -4,10 +4,7 @@ resource "azurerm_resource_group" "example" {
   name     = "infoasst-myworkspace"
   location = "EastUS"
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_key_vault" "example" {
@@ -21,6 +18,7 @@ resource "azurerm_key_vault" "example" {
   purge_protection_enabled        = false
 
   sku_name = "standard"
+  tags     = local.tags
 }
 
 resource "azurerm_search_service" "example" {
@@ -35,10 +33,7 @@ resource "azurerm_search_service" "example" {
     type = "SystemAssigned"
   }
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_cosmosdb_account" "example" {
@@ -62,10 +57,7 @@ resource "azurerm_cosmosdb_account" "example" {
     zone_redundant    = false
   }
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_service_plan" "example1" {
@@ -74,10 +66,7 @@ resource "azurerm_service_plan" "example1" {
   location            = azurerm_resource_group.example.location
   os_type             = "Linux"
   sku_name            = "S1"
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags                = local.tags
 }
 
 resource "azurerm_linux_web_app" "web" {
@@ -234,11 +223,7 @@ resource "azurerm_linux_web_app" "web" {
     }
   }
 
-  tags = {
-    "BuildNumber"      = ""
-    "ProjectName"      = "Information Assistant"
-    "azd-service-name" = "backend"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_service_plan" "example2" {
@@ -248,10 +233,7 @@ resource "azurerm_service_plan" "example2" {
   os_type             = "Linux"
   sku_name            = "P1v3"
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_linux_web_app" "enrichment" {
@@ -317,10 +299,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     }
   }
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 
   site_config {
     always_on                               = true
@@ -367,10 +346,7 @@ resource "azurerm_service_plan" "example3" {
   os_type             = "Linux"
   sku_name            = "S2"
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_linux_function_app" "example" {
@@ -481,10 +457,7 @@ resource "azurerm_linux_function_app" "example" {
     }
   }
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_cognitive_account" "example" {
@@ -496,10 +469,7 @@ resource "azurerm_cognitive_account" "example" {
 
   sku_name = "S0"
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_cognitive_account" "example2" {
@@ -511,10 +481,7 @@ resource "azurerm_cognitive_account" "example2" {
 
   sku_name = "S0"
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_cognitive_account" "example3" {
@@ -526,10 +493,7 @@ resource "azurerm_cognitive_account" "example3" {
   fqdns                      = []
   sku_name                   = "S0"
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_log_analytics_workspace" "example" {
@@ -539,10 +503,7 @@ resource "azurerm_log_analytics_workspace" "example" {
   sku                 = "PerGB2018"
   retention_in_days   = 30
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_application_insights" "example" {
@@ -553,10 +514,7 @@ resource "azurerm_application_insights" "example" {
   sampling_percentage = 0
   workspace_id        = "/subscriptions/070cfebd-3e63-42a5-ba50-58de1db7496e/resourceGroups/infoasst-myworkspace/providers/Microsoft.OperationalInsights/workspaces/infoasst-la-geprk"
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_storage_account" "infoasststoregeprk" {
@@ -567,10 +525,7 @@ resource "azurerm_storage_account" "infoasststoregeprk" {
   account_replication_type        = "LRS"
   allow_nested_items_to_be_public = false
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_storage_account" "infoasststoremediageprk" {
@@ -581,10 +536,7 @@ resource "azurerm_storage_account" "infoasststoremediageprk" {
   account_replication_type        = "LRS"
   allow_nested_items_to_be_public = false
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_monitor_action_group" "example" {
@@ -604,10 +556,7 @@ resource "azurerm_monitor_action_group" "example" {
     use_common_alert_schema = true
   }
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_monitor_smart_detector_alert_rule" "example" {
@@ -623,10 +572,7 @@ resource "azurerm_monitor_smart_detector_alert_rule" "example" {
     ids = [azurerm_monitor_action_group.example.id]
   }
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
 
 resource "azurerm_application_insights_workbook_template" "example" {
@@ -658,8 +604,5 @@ resource "azurerm_application_insights_workbook_template" "example" {
     "$schema" : "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
   })
 
-  tags = {
-    "BuildNumber" = ""
-    "ProjectName" = "Information Assistant"
-  }
+  tags = local.tags
 }
