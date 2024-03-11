@@ -553,13 +553,13 @@ resource "azurerm_storage_account" "infoasststoregeprk" {
   tags = local.tags
 }
 
-resource "azurerm_key_vault_secret" "AZURE-BLOB-STORAGE-KEY" {
+resource "azurerm_key_vault_secret" "AZURE_BLOB_STORAGE_KEY" {
   name         = "AZURE-BLOB-STORAGE-KEY"
   value        = azurerm_storage_account.infoasststoregeprk.primary_access_key
   key_vault_id = azurerm_key_vault.example.id
 }
 
-resource "azurerm_key_vault_secret" "BLOB-CONNECTION-STRING" {
+resource "azurerm_key_vault_secret" "BLOB_CONNECTION_STRING" {
   name         = "BLOB-CONNECTION-STRING"
   value        = azurerm_storage_account.infoasststoregeprk.primary_connection_string
   key_vault_id = azurerm_key_vault.example.id
