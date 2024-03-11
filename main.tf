@@ -512,7 +512,7 @@ resource "azurerm_application_insights" "example" {
   resource_group_name = azurerm_resource_group.example.name
   application_type    = "web"
   sampling_percentage = 0
-  workspace_id        = "/subscriptions/070cfebd-3e63-42a5-ba50-58de1db7496e/resourceGroups/infoasst-myworkspace/providers/Microsoft.OperationalInsights/workspaces/infoasst-la-geprk"
+  workspace_id        = azurerm_log_analytics_workspace.example.id
 
   tags = local.tags
 }
