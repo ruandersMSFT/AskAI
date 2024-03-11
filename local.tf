@@ -1,6 +1,6 @@
 locals {
   tags = {
-    "FISMA_Id" = ""
+    "FISMA_Id"      = ""
     "TerraformRepo" = "SomePath"
-  }    
+  }
 }
