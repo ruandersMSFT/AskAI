@@ -60,6 +60,13 @@ resource "azurerm_cosmosdb_account" "example" {
   tags = local.tags
 }
 
+resource "azurerm_key_vault_secret" "COSMOSDB_KEY" {
+  name         = "COSMOSDB-KEY"
+  value        = azurerm_cosmosdb_account.example.primary_key
+  key_vault_id = azurerm_key_vault.example.id
+}
+
+
 resource "azurerm_service_plan" "example1" {
   name                = "infoasst-asp-geprk"
   resource_group_name = azurerm_resource_group.example.name
