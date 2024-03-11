@@ -101,7 +101,7 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_SEARCH_SERVICE_ENDPOINT"         = "https://infoasst-search-geprk.search.windows.net/"
     "AZURE_SEARCH_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=https://infoasst-kv-geprk.vault.azure.net/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "AZURE_SUBSCRIPTION_ID"                 = "070cfebd-3e63-42a5-ba50-58de1db7496e"
-    "AZURE_TENANT_ID"                       = "ad0bec91-0d18-4873-b27d-83e0eed18fb9"
+    "AZURE_TENANT_ID"                       = data.azurerm_client_config.current.tenant_id
     "CHAT_WARNING_BANNER_TEXT"              = ""
     "COSMOSDB_KEY"                          = "@Microsoft.KeyVault(SecretUri=https://infoasst-kv-geprk.vault.azure.net/secrets/COSMOSDB-KEY)"
     "COSMOSDB_LOG_CONTAINER_NAME"           = "statuscontainer"
@@ -163,7 +163,7 @@ resource "azurerm_linux_web_app" "web" {
       jwt_allowed_client_applications = []
       jwt_allowed_groups              = []
       login_parameters                = {}
-      tenant_auth_endpoint            = "https://sts.windows.net/ad0bec91-0d18-4873-b27d-83e0eed18fb9/v2.0"
+      tenant_auth_endpoint            = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/v2.0"
       www_authentication_disabled     = false
     }
 
