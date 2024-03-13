@@ -720,6 +720,8 @@ resource "azurerm_media_services_account" "example" {
     id         = azurerm_storage_account.infoasststoremediageprk.id
     is_primary = true
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_monitor_action_group" "example" {
