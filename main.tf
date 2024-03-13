@@ -710,6 +710,18 @@ resource "azurerm_storage_account" "infoasststoremediageprk" {
   tags = local.tags
 }
 
+resource "azurerm_media_services_account" "example" {
+  name                = "examplemediaacc"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
+  public_network_access_enabled = false
+  storage_account {
+    id         = azurerm_storage_account.infoasststoremediageprk.id
+    is_primary = true
+  }
+}
+
 resource "azurerm_monitor_action_group" "example" {
   name                = "Application Insights Smart Detection"
   resource_group_name = azurerm_resource_group.example.name
