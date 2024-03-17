@@ -767,11 +767,11 @@ resource "azurerm_application_insights_workbook_template" "example" {
   priority            = 1
 
   galleries {
-    category      = "workbook"
-    name          = "test"
-    order         = 100
-    resource_type = "microsoft.insights/components"
-    type          = "tsg"
+    category      = "Deployed Template"
+    name          = "infoasst-lw-geprk"
+    order         = 1
+    resource_type = "Azure Monitor"
+    type          = "workbook"
   }
 
   template_data = jsonencode({
