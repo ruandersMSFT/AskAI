@@ -877,6 +877,7 @@ resource "azurerm_monitor_smart_detector_alert_rule" "example" {
   tags = local.tags
 }
 
+# todo russell this template_data is not correct
 resource "azurerm_application_insights_workbook_template" "example" {
   name                = "infoasst-lw-geprk"
   resource_group_name = azurerm_resource_group.example.name
