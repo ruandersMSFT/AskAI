@@ -157,8 +157,8 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_OPENAI_CHATGPT_MODEL_VERSION"    = ""
     "AZURE_OPENAI_EMBEDDINGS_MODEL_NAME"    = ""
     "AZURE_OPENAI_EMBEDDINGS_MODEL_VERSION" = ""
-    "AZURE_OPENAI_RESOURCE_GROUP"           = "infoasst-myworkspace"
-    "AZURE_OPENAI_SERVICE"                  = "infoasst-aoai-geprk"
+    "AZURE_OPENAI_RESOURCE_GROUP"           = azurerm_cognitive_account.open_ai.resource_group_name
+    "AZURE_OPENAI_SERVICE"                  = azurerm_cognitive_account.open_ai.name
     "AZURE_OPENAI_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                    = "vector-index"
     "AZURE_SEARCH_SERVICE"                  = azurerm_search_service.example.name
@@ -291,13 +291,73 @@ resource "azurerm_linux_web_app" "web" {
 }
 
 resource "azurerm_service_plan" "example2" {
-  name                = "infoasst-enrichmentasp-geprk"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  os_type             = "Linux"
-  sku_name            = "P1v3"
+  name                         = "infoasst-enrichmentasp-geprk"
+  resource_group_name          = azurerm_resource_group.example.name
+  location                     = azurerm_resource_group.example.location
+  os_type                      = "Linux"
+  sku_name                     = "P1v3"
+  per_site_scaling_enabled     = false
+  maximum_elastic_worker_count = 3
+  zone_balancing_enabled       = false
+  tags                         = local.tags
+}
 
-  tags = local.tags
+
+resource "azurerm_monitor_autoscale_setting" "example2" {
+  name                = "iinfoasst-enrichmentasp-geprk-Autoscale"
+  resource_group_name = azurerm_service_plan.example2.name
+  location            = azurerm_service_plan.example2.location
+  target_resource_id  = azurerm_service_plan.example2.id
+
+  profile {
+    name = "Scale out condition"
+
+    capacity {
+      default = 1
+      minimum = 1
+      maximum = 5
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_service_plan.example2.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = 60
+      }
+
+      scale_action {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT5M"
+      }
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_service_plan.example2.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT10M"
+        time_aggregation   = "Average"
+        operator           = "LessThan"
+        threshold          = 20
+      }
+
+      scale_action {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT15M"
+      }
+    }
+  }
 }
 
 resource "azurerm_linux_web_app" "enrichment" {
@@ -315,7 +375,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"    = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "AZURE_KEY_VAULT_ENDPOINT"               = azurerm_key_vault.example.vault_uri
     "AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME" = "text-embedding-ada-002"
-    "AZURE_OPENAI_SERVICE"                   = "infoasst-aoai-geprk"
+    "AZURE_OPENAI_SERVICE"                   = azurerm_cognitive_account.open_ai.name
     "AZURE_OPENAI_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                     = "vector-index"
     "AZURE_SEARCH_SERVICE"                   = azurerm_search_service.example.name
@@ -411,6 +471,63 @@ resource "azurerm_service_plan" "example3" {
   sku_name            = "S2"
 
   tags = local.tags
+}
+
+resource "azurerm_monitor_autoscale_setting" "example3" {
+  name                = "infoasst-func-asp-geprk-Autoscale"
+  resource_group_name = azurerm_service_plan.example3.name
+  location            = azurerm_service_plan.example3.location
+  target_resource_id  = azurerm_service_plan.example3.id
+
+  profile {
+    name = "defaultProfile"
+
+    capacity {
+      default = 2
+      minimum = 2
+      maximum = 10
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_service_plan.example3.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = 60
+      }
+
+      scale_action {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = "2"
+        cooldown  = "PT5M"
+      }
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_service_plan.example3.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "LessThan"
+        threshold          = 40
+      }
+
+      scale_action {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = "2"
+        cooldown  = "PT2M"
+      }
+    }
+  }
 }
 
 resource "azurerm_linux_function_app" "example" {
@@ -760,6 +877,7 @@ resource "azurerm_monitor_smart_detector_alert_rule" "example" {
   tags = local.tags
 }
 
+# todo russell this template_data is not correct
 resource "azurerm_application_insights_workbook_template" "example" {
   name                = "infoasst-lw-geprk"
   resource_group_name = azurerm_resource_group.example.name
@@ -767,11 +885,11 @@ resource "azurerm_application_insights_workbook_template" "example" {
   priority            = 1
 
   galleries {
-    category      = "workbook"
-    name          = "test"
-    order         = 100
-    resource_type = "microsoft.insights/components"
-    type          = "tsg"
+    category      = "Deployed Template"
+    name          = "infoasst-lw-geprk"
+    order         = 1
+    resource_type = "Azure Monitor"
+    type          = "workbook"
   }
 
   template_data = jsonencode({
@@ -833,17 +951,17 @@ resource "azurerm_key_vault_access_policy" "current_user" {
   key_permissions = [
     "Backup",
     "Create",
-    "Decrypt", 
+    "Decrypt",
     "Delete",
-    "Encrypt", 
-    "Get", 
-    "Import", 
-    "List", 
-    "Purge", 
-    "Recover", 
-    "Restore", 
+    "Encrypt",
+    "Get",
+    "Import",
+    "List",
+    "Purge",
+    "Recover",
+    "Restore",
     "Sign",
-    "UnwrapKey", 
+    "UnwrapKey",
     "Update",
     "Verify",
     "WrapKey",
