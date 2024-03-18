@@ -291,13 +291,73 @@ resource "azurerm_linux_web_app" "web" {
 }
 
 resource "azurerm_service_plan" "example2" {
-  name                = "infoasst-enrichmentasp-geprk"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  os_type             = "Linux"
-  sku_name            = "P1v3"
+  name                         = "infoasst-enrichmentasp-geprk"
+  resource_group_name          = azurerm_resource_group.example.name
+  location                     = azurerm_resource_group.example.location
+  os_type                      = "Linux"
+  sku_name                     = "P1v3"
+  per_site_scaling_enabled     = false
+  maximum_elastic_worker_count = 3
+  zone_balancing_enabled       = false
+  tags                         = local.tags
+}
 
-  tags = local.tags
+
+resource "azurerm_monitor_autoscale_setting" "example2" {
+  name                = "iinfoasst-enrichmentasp-geprk-Autoscale"
+  resource_group_name = azurerm_service_plan.example2.name
+  location            = azurerm_service_plan.example2.location
+  target_resource_id  = azurerm_service_plan.example2.id
+
+  profile {
+    name = "Scale out condition"
+
+    capacity {
+      default = 1
+      minimum = 1
+      maximum = 5
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_service_plan.example2.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = 60
+      }
+
+      scale_action {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT5M"
+      }
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "CpuPercentage"
+        metric_resource_id = azurerm_service_plan.example2.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT10M"
+        time_aggregation   = "Average"
+        operator           = "LessThan"
+        threshold          = 20
+      }
+
+      scale_action {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT15M"
+      }
+    }
+  }
 }
 
 resource "azurerm_linux_web_app" "enrichment" {
