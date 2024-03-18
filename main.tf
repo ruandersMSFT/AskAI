@@ -157,8 +157,8 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_OPENAI_CHATGPT_MODEL_VERSION"    = ""
     "AZURE_OPENAI_EMBEDDINGS_MODEL_NAME"    = ""
     "AZURE_OPENAI_EMBEDDINGS_MODEL_VERSION" = ""
-    "AZURE_OPENAI_RESOURCE_GROUP"           = "infoasst-myworkspace"
-    "AZURE_OPENAI_SERVICE"                  = "infoasst-aoai-geprk"
+    "AZURE_OPENAI_RESOURCE_GROUP"           = azurerm_cognitive_account.open_ai.resource_group_name
+    "AZURE_OPENAI_SERVICE"                  = azurerm_cognitive_account.open_ai.name
     "AZURE_OPENAI_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                    = "vector-index"
     "AZURE_SEARCH_SERVICE"                  = azurerm_search_service.example.name
@@ -375,7 +375,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"    = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "AZURE_KEY_VAULT_ENDPOINT"               = azurerm_key_vault.example.vault_uri
     "AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME" = "text-embedding-ada-002"
-    "AZURE_OPENAI_SERVICE"                   = "infoasst-aoai-geprk"
+    "AZURE_OPENAI_SERVICE"                   = azurerm_cognitive_account.open_ai.name
     "AZURE_OPENAI_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                     = "vector-index"
     "AZURE_SEARCH_SERVICE"                   = azurerm_search_service.example.name
