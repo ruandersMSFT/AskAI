@@ -9,18 +9,36 @@ resource "azurerm_resource_group" "example" {
   tags = local.tags
 }
 
-resource "azurerm_key_vault" "example" {
-  name                            = "infoasst-kv-geprk"
-  location                        = azurerm_resource_group.example.location
-  resource_group_name             = azurerm_resource_group.example.name
-  enabled_for_disk_encryption     = false
-  enabled_for_template_deployment = true
-  tenant_id                       = data.azurerm_client_config.current.tenant_id
-  soft_delete_retention_days      = 90
-  purge_protection_enabled        = false
+resource "azurerm_private_dns_zone" "example" {
+  name                = "mydomain.com"
+  resource_group_name = azurerm_resource_group.example.name
+}
 
-  sku_name = "standard"
-  tags     = local.tags
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  address_space       = ["10.0.0.0/16"]
+  dns_servers         = ["10.0.0.4", "10.0.0.5"]
+
+  subnet {
+    name           = "subnet1"
+    address_prefix = "10.0.1.0/24"
+  }
+}
+
+module "KeyVault" {
+  source = "./_modules/KeyVault"
+
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
+  name                 = "infoasst-kv-geprk"
+  enabled_for_template_deployment = true
+  private_dns_zone_ids = [azurerm_private_dns_zone.example.id]
+  subnet_id            = "${azurerm_virtual_network.example.id}/subnets/subnet1"
+  tags                 = local.tags
+  tenant_id            = data.azurerm_client_config.current.tenant_id
 }
 
 resource "azurerm_search_service" "example" {
@@ -41,7 +59,7 @@ resource "azurerm_search_service" "example" {
 resource "azurerm_key_vault_secret" "AZURE_SEARCH_SERVICE_KEY" {
   name         = "AZURE-SEARCH-SERVICE-KEY"
   value        = azurerm_search_service.example.primary_key
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
 }
 
 resource "azurerm_cosmosdb_account" "example" {
@@ -120,7 +138,7 @@ resource "azurerm_cosmosdb_sql_container" "tag" {
 resource "azurerm_key_vault_secret" "COSMOSDB_KEY" {
   name         = "COSMOSDB-KEY"
   value        = azurerm_cosmosdb_account.example.primary_key
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
 }
 
 
@@ -146,11 +164,11 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_BLOB_STORAGE_ACCOUNT"            = azurerm_storage_account.infoasststoregeprk.name
     "AZURE_BLOB_STORAGE_CONTAINER"          = "content"
     "AZURE_BLOB_STORAGE_ENDPOINT"           = "https://infoasststoregeprk.blob.core.windows.net/"
-    "AZURE_BLOB_STORAGE_KEY"                = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
+    "AZURE_BLOB_STORAGE_KEY"                = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
     "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"   = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "AZURE_CLIENT_ID"                       = local.azure_client_id
-    "AZURE_CLIENT_SECRET"                   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-CLIENT-SECRET)"
-    "AZURE_KEY_VAULT_ENDPOINT"              = azurerm_key_vault.example.vault_uri
+    "AZURE_CLIENT_SECRET"                   = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-CLIENT-SECRET)"
+    "AZURE_KEY_VAULT_ENDPOINT"              = module.KeyVault.vault_uri
     "AZURE_MANAGEMENT_URL"                  = local.management_url
     "AZURE_OPENAI_CHATGPT_DEPLOYMENT"       = "gpt-35-turbo-16k"
     "AZURE_OPENAI_CHATGPT_MODEL_NAME"       = ""
@@ -159,15 +177,15 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_OPENAI_EMBEDDINGS_MODEL_VERSION" = ""
     "AZURE_OPENAI_RESOURCE_GROUP"           = azurerm_cognitive_account.open_ai.resource_group_name
     "AZURE_OPENAI_SERVICE"                  = azurerm_cognitive_account.open_ai.name
-    "AZURE_OPENAI_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
+    "AZURE_OPENAI_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                    = "vector-index"
     "AZURE_SEARCH_SERVICE"                  = azurerm_search_service.example.name
     "AZURE_SEARCH_SERVICE_ENDPOINT"         = "https://${azurerm_search_service.example.name}.search.windows.net/"
-    "AZURE_SEARCH_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
+    "AZURE_SEARCH_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "AZURE_SUBSCRIPTION_ID"                 = data.azurerm_client_config.current.subscription_id
     "AZURE_TENANT_ID"                       = data.azurerm_client_config.current.tenant_id
     "CHAT_WARNING_BANNER_TEXT"              = ""
-    "COSMOSDB_KEY"                          = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/COSMOSDB-KEY)"
+    "COSMOSDB_KEY"                          = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/COSMOSDB-KEY)"
     "COSMOSDB_LOG_CONTAINER_NAME"           = local.COSMOSDB_LOG_CONTAINER_NAME
     "COSMOSDB_LOG_DATABASE_NAME"            = local.COSMOSDB_LOG_DATABASE_NAME
     "COSMOSDB_TAGS_CONTAINER_NAME"          = local.COSMOSDB_TAGS_CONTAINER_NAME
@@ -371,18 +389,18 @@ resource "azurerm_linux_web_app" "enrichment" {
     "AZURE_BLOB_STORAGE_ACCOUNT"             = azurerm_storage_account.infoasststoregeprk.name
     "AZURE_BLOB_STORAGE_CONTAINER"           = "content"
     "AZURE_BLOB_STORAGE_ENDPOINT"            = "https://infoasststoregeprk.blob.core.windows.net/"
-    "AZURE_BLOB_STORAGE_KEY"                 = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
+    "AZURE_BLOB_STORAGE_KEY"                 = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
     "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"    = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
-    "AZURE_KEY_VAULT_ENDPOINT"               = azurerm_key_vault.example.vault_uri
+    "AZURE_KEY_VAULT_ENDPOINT"               = module.KeyVault.vault_uri
     "AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME" = "text-embedding-ada-002"
     "AZURE_OPENAI_SERVICE"                   = azurerm_cognitive_account.open_ai.name
-    "AZURE_OPENAI_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
+    "AZURE_OPENAI_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                     = "vector-index"
     "AZURE_SEARCH_SERVICE"                   = azurerm_search_service.example.name
     "AZURE_SEARCH_SERVICE_ENDPOINT"          = "https://infoasst-search-geprk.search.windows.net/"
-    "AZURE_SEARCH_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
-    "BLOB_CONNECTION_STRING"                 = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
-    "COSMOSDB_KEY"                           = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/COSMOSDB-KEY)"
+    "AZURE_SEARCH_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
+    "BLOB_CONNECTION_STRING"                 = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
+    "COSMOSDB_KEY"                           = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/COSMOSDB-KEY)"
     "COSMOSDB_LOG_CONTAINER_NAME"            = local.COSMOSDB_LOG_CONTAINER_NAME
     "COSMOSDB_LOG_DATABASE_NAME"             = local.COSMOSDB_LOG_DATABASE_NAME
     "COSMOSDB_TAGS_CONTAINER_NAME"           = local.COSMOSDB_TAGS_CONTAINER_NAME
@@ -542,20 +560,20 @@ resource "azurerm_linux_function_app" "example" {
   service_plan_id            = azurerm_service_plan.example3.id
 
   app_settings = {
-    "AZURE_BLOB_STORAGE_KEY"                     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
+    "AZURE_BLOB_STORAGE_KEY"                     = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
     "AZURE_FORM_RECOGNIZER_ENDPOINT"             = "https://${azurerm_cognitive_account.form_recognizer.name}.cognitiveservices.azure.com/"
-    "AZURE_FORM_RECOGNIZER_KEY"                  = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-FORM-RECOGNIZER-KEY)"
+    "AZURE_FORM_RECOGNIZER_KEY"                  = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-FORM-RECOGNIZER-KEY)"
     "AZURE_SEARCH_INDEX"                         = "vector-index"
     "AZURE_SEARCH_SERVICE_ENDPOINT"              = "https://${azurerm_search_service.example.name}.search.windows.net/"
-    "AZURE_SEARCH_SERVICE_KEY"                   = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
-    "BLOB_CONNECTION_STRING"                     = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
+    "AZURE_SEARCH_SERVICE_KEY"                   = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
+    "BLOB_CONNECTION_STRING"                     = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
     "BLOB_STORAGE_ACCOUNT"                       = azurerm_storage_account.infoasststoregeprk.name
     "BLOB_STORAGE_ACCOUNT_ENDPOINT"              = "https://infoasststoregeprk.blob.core.windows.net/"
     "BLOB_STORAGE_ACCOUNT_LOG_CONTAINER_NAME"    = "logs"
     "BLOB_STORAGE_ACCOUNT_OUTPUT_CONTAINER_NAME" = "content"
     "BLOB_STORAGE_ACCOUNT_UPLOAD_CONTAINER_NAME" = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "CHUNK_TARGET_SIZE"                          = "750"
-    "COSMOSDB_KEY"                               = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/COSMOSDB-KEY)"
+    "COSMOSDB_KEY"                               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/COSMOSDB-KEY)"
     "COSMOSDB_LOG_CONTAINER_NAME"                = local.COSMOSDB_LOG_CONTAINER_NAME
     "COSMOSDB_LOG_DATABASE_NAME"                 = local.COSMOSDB_LOG_DATABASE_NAME
     "COSMOSDB_TAGS_CONTAINER_NAME"               = local.COSMOSDB_TAGS_CONTAINER_NAME
@@ -565,7 +583,7 @@ resource "azurerm_linux_function_app" "example" {
     "ENABLE_DEV_CODE"                            = "False"
     "ENRICHMENT_BACKOFF"                         = "60"
     "ENRICHMENT_ENDPOINT"                        = "https://eastus.api.cognitive.microsoft.com/"
-    "ENRICHMENT_KEY"                             = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault.example.vault_uri}/secrets/ENRICHMENT-KEY)"
+    "ENRICHMENT_KEY"                             = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/ENRICHMENT-KEY)"
     "ENRICHMENT_LOCATION"                        = "EastUS"
     "ENRICHMENT_NAME"                            = "infoasst-enrichment-cog-geprk"
     "FR_API_VERSION"                             = "2023-07-31"
@@ -656,7 +674,7 @@ resource "azurerm_cognitive_account" "open_ai" {
 resource "azurerm_key_vault_secret" "AZURE_OPENAI_SERVICE_KEY" {
   name         = "AZURE-OPENAI-SERVICE-KEY"
   value        = azurerm_cognitive_account.open_ai.primary_access_key
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
 }
 
 resource "azurerm_cognitive_account" "form_recognizer" {
@@ -674,7 +692,7 @@ resource "azurerm_cognitive_account" "form_recognizer" {
 resource "azurerm_key_vault_secret" "AZURE_FORM_RECOGNIZER_KEY" {
   name         = "AZURE-FORM-RECOGNIZER-KEY"
   value        = azurerm_cognitive_account.form_recognizer.primary_access_key
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
 }
 
 resource "azurerm_cognitive_account" "enrichment" {
@@ -692,7 +710,7 @@ resource "azurerm_cognitive_account" "enrichment" {
 resource "azurerm_key_vault_secret" "ENRICHMENT_KEY" {
   name         = "ENRICHMENT-KEY"
   value        = azurerm_cognitive_account.enrichment.primary_access_key
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
 }
 
 resource "azurerm_log_analytics_workspace" "example" {
@@ -801,13 +819,13 @@ resource "azurerm_storage_queue" "embeddings_queue" {
 resource "azurerm_key_vault_secret" "AZURE_BLOB_STORAGE_KEY" {
   name         = "AZURE-BLOB-STORAGE-KEY"
   value        = azurerm_storage_account.infoasststoregeprk.primary_access_key
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
 }
 
 resource "azurerm_key_vault_secret" "BLOB_CONNECTION_STRING" {
   name         = "BLOB-CONNECTION-STRING"
   value        = azurerm_storage_account.infoasststoregeprk.primary_connection_string
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
 }
 
 resource "azurerm_storage_account" "infoasststoremediageprk" {
@@ -911,7 +929,7 @@ resource "azurerm_application_insights_workbook_template" "example" {
 }
 
 resource "azurerm_key_vault_access_policy" "function_app" {
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = azurerm_linux_function_app.example.identity[0].principal_id
 
@@ -922,7 +940,7 @@ resource "azurerm_key_vault_access_policy" "function_app" {
 }
 
 resource "azurerm_key_vault_access_policy" "web" {
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = azurerm_linux_web_app.web.identity[0].principal_id
 
@@ -933,7 +951,7 @@ resource "azurerm_key_vault_access_policy" "web" {
 }
 
 resource "azurerm_key_vault_access_policy" "enrichment" {
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = azurerm_linux_web_app.enrichment.identity[0].principal_id
 
@@ -944,7 +962,7 @@ resource "azurerm_key_vault_access_policy" "enrichment" {
 }
 
 resource "azurerm_key_vault_access_policy" "current_user" {
-  key_vault_id = azurerm_key_vault.example.id
+  key_vault_id = module.KeyVault.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
   object_id    = data.azurerm_client_config.current.object_id
 
