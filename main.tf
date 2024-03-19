@@ -4,7 +4,7 @@ data "azurerm_client_config" "current" {}
 
 resource "azurerm_resource_group" "example" {
   name     = "infoasst-myworkspace"
-  location = "EastUS"
+  location = local.location
 
   tags = local.tags
 }
@@ -27,20 +27,6 @@ resource "azurerm_virtual_network" "example" {
   }
 }
 
-module "KeyVault" {
-  source = "./_modules/KeyVault"
-
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-
-  name                            = "infoasst-kv-geprk"
-  enabled_for_template_deployment = true
-  private_dns_zone_ids            = [azurerm_private_dns_zone.example.id]
-  subnet_id                       = "${azurerm_virtual_network.example.id}/subnets/subnet1"
-  tags                            = local.tags
-  tenant_id                       = data.azurerm_client_config.current.tenant_id
-}
-
 module "SearchService" {
   source = "./_modules/SearchService"
 
@@ -54,78 +40,6 @@ module "SearchService" {
   tags                        = local.tags
 }
 
-resource "azurerm_key_vault_secret" "search_service_key" {
-  name         = local.AZURE_SEARCH_SERVICE_KEY
-  value        = module.SearchService.primary_key
-  key_vault_id = module.KeyVault.id
-}
-
-module "CosmosDB" {
-  source = "./_modules/CosmosDB"
-
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-
-  name                 = "infoasst-cosmos-geprk"
-  kind                 = "GlobalDocumentDB"
-  private_dns_zone_ids = [azurerm_private_dns_zone.example.id]
-  subnet_id            = "${azurerm_virtual_network.example.id}/subnets/subnet1"
-  tags                 = local.tags
-}
-
-resource "azurerm_cosmosdb_sql_database" "log" {
-  name                = local.COSMOSDB_LOG_DATABASE_NAME
-  resource_group_name = module.CosmosDB.resource_group_name
-  account_name        = module.CosmosDB.name
-}
-
-resource "azurerm_cosmosdb_sql_container" "log" {
-  name                  = local.COSMOSDB_LOG_CONTAINER_NAME
-  resource_group_name   = module.CosmosDB.resource_group_name
-  account_name          = module.CosmosDB.name
-  database_name         = azurerm_cosmosdb_sql_database.log.name
-  partition_key_path    = "/file_path"
-  partition_key_version = 1
-  throughput            = 1000
-
-  indexing_policy {
-    indexing_mode = "consistent"
-
-    included_path {
-      path = "/*"
-    }
-  }
-}
-
-resource "azurerm_cosmosdb_sql_database" "tag" {
-  name                = local.COSMOSDB_TAGS_DATABASE_NAME
-  resource_group_name = module.CosmosDB.resource_group_name
-  account_name        = module.CosmosDB.name
-}
-
-resource "azurerm_cosmosdb_sql_container" "tag" {
-  name                  = local.COSMOSDB_TAGS_CONTAINER_NAME
-  resource_group_name   = module.CosmosDB.resource_group_name
-  account_name          = module.CosmosDB.name
-  database_name         = azurerm_cosmosdb_sql_database.tag.name
-  partition_key_path    = "/file_path"
-  partition_key_version = 1
-  throughput            = 1000
-
-  indexing_policy {
-    indexing_mode = "consistent"
-
-    included_path {
-      path = "/*"
-    }
-  }
-}
-
-resource "azurerm_key_vault_secret" "COSMOSDB_KEY" {
-  name         = "COSMOSDB-KEY"
-  value        = module.CosmosDB.primary_key
-  key_vault_id = module.KeyVault.id
-}
 
 
 resource "azurerm_service_plan" "example1" {
@@ -569,7 +483,7 @@ resource "azurerm_linux_function_app" "example" {
     "ENRICHMENT_BACKOFF"                         = "60"
     "ENRICHMENT_ENDPOINT"                        = "https://eastus.api.cognitive.microsoft.com/"
     "ENRICHMENT_KEY"                             = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/ENRICHMENT-KEY)"
-    "ENRICHMENT_LOCATION"                        = "EastUS"
+    "ENRICHMENT_LOCATION"                        = local.location
     "ENRICHMENT_NAME"                            = module.cognitive_account_enrichment.name
     "FR_API_VERSION"                             = "2023-07-31"
     "IMAGE_ENRICHMENT_QUEUE"                     = "image-enrichment-queue"
@@ -644,26 +558,7 @@ resource "azurerm_linux_function_app" "example" {
   tags = local.tags
 }
 
-module "cognitive_account_openai" {
-  source = "./_modules/CognitiveAccount"
 
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-
-  custom_subdomain_name = "infoasst-aoai-geprk"
-  kind                  = "OpenAI"
-  name                  = "infoasst-aoai-geprk"
-  private_dns_zone_ids            = [azurerm_private_dns_zone.example.id]
-  sku_name = "S0"
-  subnet_id                       = "${azurerm_virtual_network.example.id}/subnets/subnet1"
-  tags = local.tags
-}
-
-resource "azurerm_key_vault_secret" "AZURE_OPENAI_SERVICE_KEY" {
-  name         = "AZURE-OPENAI-SERVICE-KEY"
-  value        = module.cognitive_account_openai.primary_access_key
-  key_vault_id = module.KeyVault.id
-}
 
 module "cognitive_account_form_recognizer" {
   source = "./_modules/CognitiveAccount"
@@ -680,11 +575,7 @@ module "cognitive_account_form_recognizer" {
   tags = local.tags
 }
 
-resource "azurerm_key_vault_secret" "form_recognizer_key" {
-  name         = local.AZURE_FORM_RECOGNIZER_KEY
-  value        = module.cognitive_account_form_recognizer.primary_access_key
-  key_vault_id = module.KeyVault.id
-}
+
 
 module "cognitive_account_enrichment" {
   source = "./_modules/CognitiveAccount"
@@ -700,11 +591,6 @@ module "cognitive_account_enrichment" {
   tags = local.tags
 }
 
-resource "azurerm_key_vault_secret" "ENRICHMENT_KEY" {
-  name         = "ENRICHMENT-KEY"
-  value        = module.cognitive_account_enrichment.primary_access_key
-  key_vault_id = module.KeyVault.id
-}
 
 resource "azurerm_log_analytics_workspace" "example" {
   name                = "infoasst-la-geprk"
@@ -806,17 +692,7 @@ resource "azurerm_storage_queue" "embeddings_queue" {
   storage_account_name = module.StorageAccount.name
 }
 
-resource "azurerm_key_vault_secret" "AZURE_BLOB_STORAGE_KEY" {
-  name         = "AZURE-BLOB-STORAGE-KEY"
-  value        = module.StorageAccount.primary_access_key
-  key_vault_id = module.KeyVault.id
-}
 
-resource "azurerm_key_vault_secret" "BLOB_CONNECTION_STRING" {
-  name         = "BLOB-CONNECTION-STRING"
-  value        = module.StorageAccount.primary_connection_string
-  key_vault_id = module.KeyVault.id
-}
 
 module "StorageAccountMedia" {
   source = "./_modules/StorageAccount"

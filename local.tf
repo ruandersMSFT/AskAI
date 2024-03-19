@@ -1,4 +1,6 @@
 locals {
+  location = "EastUS"
+  
   azure_client_id      = "3aff5d4e-1f13-4a7d-947e-612aae549f5d" # Russell's Tenant
   azure_management_url = "https://management.core.windows.net/"
 
