@@ -161,8 +161,8 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_OPENAI_CHATGPT_MODEL_VERSION"    = ""
     "AZURE_OPENAI_EMBEDDINGS_MODEL_NAME"    = ""
     "AZURE_OPENAI_EMBEDDINGS_MODEL_VERSION" = ""
-    "AZURE_OPENAI_RESOURCE_GROUP"           = azurerm_cognitive_account.open_ai.resource_group_name
-    "AZURE_OPENAI_SERVICE"                  = azurerm_cognitive_account.open_ai.name
+    "AZURE_OPENAI_RESOURCE_GROUP"           = module.cognitive_account_openai.resource_group_name
+    "AZURE_OPENAI_SERVICE"                  = module.cognitive_account_openai.name
     "AZURE_OPENAI_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                    = local.AZURE_SEARCH_INDEX
     "AZURE_SEARCH_SERVICE"                  = module.SearchService.name
@@ -378,7 +378,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"    = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "AZURE_KEY_VAULT_ENDPOINT"               = module.KeyVault.vault_uri
     "AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME" = "text-embedding-ada-002"
-    "AZURE_OPENAI_SERVICE"                   = azurerm_cognitive_account.open_ai.name
+    "AZURE_OPENAI_SERVICE"                   = module.cognitive_account_openai.name
     "AZURE_OPENAI_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                     = local.AZURE_SEARCH_INDEX
     "AZURE_SEARCH_SERVICE"                   = module.SearchService.name
@@ -546,7 +546,7 @@ resource "azurerm_linux_function_app" "example" {
 
   app_settings = {
     "AZURE_BLOB_STORAGE_KEY"                     = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
-    "AZURE_FORM_RECOGNIZER_ENDPOINT"             = "https://${azurerm_cognitive_account.form_recognizer.name}.cognitiveservices.azure.com/"
+    "AZURE_FORM_RECOGNIZER_ENDPOINT"             = "https://${module.cognitive_account_form_recognizer.name}.cognitiveservices.azure.com/"
     "AZURE_FORM_RECOGNIZER_KEY"                  = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/${local.AZURE_FORM_RECOGNIZER_KEY})"
     "AZURE_SEARCH_INDEX"                         = local.AZURE_SEARCH_INDEX
     "AZURE_SEARCH_SERVICE_ENDPOINT"              = module.SearchService.endpoint
@@ -570,7 +570,7 @@ resource "azurerm_linux_function_app" "example" {
     "ENRICHMENT_ENDPOINT"                        = "https://eastus.api.cognitive.microsoft.com/"
     "ENRICHMENT_KEY"                             = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/ENRICHMENT-KEY)"
     "ENRICHMENT_LOCATION"                        = "EastUS"
-    "ENRICHMENT_NAME"                            = "infoasst-enrichment-cog-geprk"
+    "ENRICHMENT_NAME"                            = module.cognitive_account_enrichment.name
     "FR_API_VERSION"                             = "2023-07-31"
     "IMAGE_ENRICHMENT_QUEUE"                     = "image-enrichment-queue"
     "MAX_ENRICHMENT_REQUEUE_COUNT"               = "10"
@@ -644,57 +644,65 @@ resource "azurerm_linux_function_app" "example" {
   tags = local.tags
 }
 
-resource "azurerm_cognitive_account" "open_ai" {
-  name                  = "infoasst-aoai-geprk"
-  location              = azurerm_resource_group.example.location
-  resource_group_name   = azurerm_resource_group.example.name
-  kind                  = "OpenAI"
+module "cognitive_account_openai" {
+  source = "./_modules/CognitiveAccount"
+
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
   custom_subdomain_name = "infoasst-aoai-geprk"
-
+  kind                  = "OpenAI"
+  name                  = "infoasst-aoai-geprk"
+  private_dns_zone_ids            = [azurerm_private_dns_zone.example.id]
   sku_name = "S0"
-
+  subnet_id                       = "${azurerm_virtual_network.example.id}/subnets/subnet1"
   tags = local.tags
 }
 
 resource "azurerm_key_vault_secret" "AZURE_OPENAI_SERVICE_KEY" {
   name         = "AZURE-OPENAI-SERVICE-KEY"
-  value        = azurerm_cognitive_account.open_ai.primary_access_key
+  value        = module.cognitive_account_openai.primary_access_key
   key_vault_id = module.KeyVault.id
 }
 
-resource "azurerm_cognitive_account" "form_recognizer" {
-  name                  = "infoasst-fr-geprk"
-  location              = azurerm_resource_group.example.location
-  resource_group_name   = azurerm_resource_group.example.name
-  kind                  = "FormRecognizer"
+module "cognitive_account_form_recognizer" {
+  source = "./_modules/CognitiveAccount"
+
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
   custom_subdomain_name = "infoasst-fr-geprk"
-
+  kind                  = "FormRecognizer"
+  name                  = "infoasst-fr-geprk"
+  private_dns_zone_ids            = [azurerm_private_dns_zone.example.id]
   sku_name = "S0"
-
+  subnet_id                       = "${azurerm_virtual_network.example.id}/subnets/subnet1"
   tags = local.tags
 }
 
 resource "azurerm_key_vault_secret" "form_recognizer_key" {
   name         = local.AZURE_FORM_RECOGNIZER_KEY
-  value        = azurerm_cognitive_account.form_recognizer.primary_access_key
+  value        = module.cognitive_account_form_recognizer.primary_access_key
   key_vault_id = module.KeyVault.id
 }
 
-resource "azurerm_cognitive_account" "enrichment" {
-  name                       = "infoasst-enrichment-cog-geprk"
-  location                   = azurerm_resource_group.example.location
-  resource_group_name        = azurerm_resource_group.example.name
-  kind                       = "CognitiveServices"
-  dynamic_throttling_enabled = false
-  fqdns                      = []
-  sku_name                   = "S0"
+module "cognitive_account_enrichment" {
+  source = "./_modules/CognitiveAccount"
 
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
+  kind                  = "CognitiveServices"
+  name                  = "infoasst-enrichment-cog-geprk"
+  private_dns_zone_ids            = [azurerm_private_dns_zone.example.id]
+  sku_name = "S0"
+  subnet_id                       = "${azurerm_virtual_network.example.id}/subnets/subnet1"
   tags = local.tags
 }
 
 resource "azurerm_key_vault_secret" "ENRICHMENT_KEY" {
   name         = "ENRICHMENT-KEY"
-  value        = azurerm_cognitive_account.enrichment.primary_access_key
+  value        = module.cognitive_account_enrichment.primary_access_key
   key_vault_id = module.KeyVault.id
 }
 
