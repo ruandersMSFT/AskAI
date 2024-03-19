@@ -11,7 +11,6 @@ resource "azurerm_cognitive_account" "this" {
   tags = var.tags
 }
 
-
 module "PrivateEndpoint" {
   source = "../PrivateEndpoint"
 

@@ -481,7 +481,7 @@ resource "azurerm_linux_function_app" "example" {
     "EMBEDDINGS_QUEUE"                           = "embeddings-queue"
     "ENABLE_DEV_CODE"                            = "False"
     "ENRICHMENT_BACKOFF"                         = "60"
-    "ENRICHMENT_ENDPOINT"                        = "https://eastus.api.cognitive.microsoft.com/"
+    "ENRICHMENT_ENDPOINT"                        = module.cognitive_account_enrichment.endpoint
     "ENRICHMENT_KEY"                             = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/ENRICHMENT-KEY)"
     "ENRICHMENT_LOCATION"                        = local.location
     "ENRICHMENT_NAME"                            = module.cognitive_account_enrichment.name
@@ -557,8 +557,6 @@ resource "azurerm_linux_function_app" "example" {
 
   tags = local.tags
 }
-
-
 
 module "cognitive_account_form_recognizer" {
   source = "./_modules/CognitiveAccount"
