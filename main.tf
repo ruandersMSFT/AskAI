@@ -60,41 +60,29 @@ resource "azurerm_key_vault_secret" "AZURE_SEARCH_SERVICE_KEY" {
   key_vault_id = module.KeyVault.id
 }
 
-resource "azurerm_cosmosdb_account" "example" {
-  name                = "infoasst-cosmos-geprk"
+module "CosmosDB" {
+  source = "./_modules/CosmosDB"
+
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
-  offer_type          = "Standard"
-  kind                = "GlobalDocumentDB"
 
-  enable_automatic_failover = true
-
-  consistency_policy {
-    consistency_level       = "Session"
-    max_interval_in_seconds = 5
-    max_staleness_prefix    = 100
-  }
-
-  geo_location {
-    failover_priority = 0
-    location          = "eastus"
-    zone_redundant    = false
-  }
-
-  tags = local.tags
+  name                 = "infoasst-cosmos-geprk"
+  kind                 = "GlobalDocumentDB"
+  private_dns_zone_ids = [azurerm_private_dns_zone.example.id]
+  subnet_id            = "${azurerm_virtual_network.example.id}/subnets/subnet1"
+  tags                 = local.tags
 }
-
 
 resource "azurerm_cosmosdb_sql_database" "log" {
   name                = local.COSMOSDB_LOG_DATABASE_NAME
-  resource_group_name = azurerm_cosmosdb_account.example.resource_group_name
-  account_name        = azurerm_cosmosdb_account.example.name
+  resource_group_name = module.CosmosDB.resource_group_name
+  account_name        = module.CosmosDB.name
 }
 
 resource "azurerm_cosmosdb_sql_container" "log" {
   name                  = local.COSMOSDB_LOG_CONTAINER_NAME
-  resource_group_name   = azurerm_cosmosdb_account.example.resource_group_name
-  account_name          = azurerm_cosmosdb_account.example.name
+  resource_group_name   = module.CosmosDB.resource_group_name
+  account_name          = module.CosmosDB.name
   database_name         = azurerm_cosmosdb_sql_database.log.name
   partition_key_path    = "/file_path"
   partition_key_version = 1
@@ -111,14 +99,14 @@ resource "azurerm_cosmosdb_sql_container" "log" {
 
 resource "azurerm_cosmosdb_sql_database" "tag" {
   name                = local.COSMOSDB_TAGS_DATABASE_NAME
-  resource_group_name = azurerm_cosmosdb_account.example.resource_group_name
-  account_name        = azurerm_cosmosdb_account.example.name
+  resource_group_name = module.CosmosDB.resource_group_name
+  account_name        = module.CosmosDB.name
 }
 
 resource "azurerm_cosmosdb_sql_container" "tag" {
   name                  = local.COSMOSDB_TAGS_CONTAINER_NAME
-  resource_group_name   = azurerm_cosmosdb_account.example.resource_group_name
-  account_name          = azurerm_cosmosdb_account.example.name
+  resource_group_name   = module.CosmosDB.resource_group_name
+  account_name          = module.CosmosDB.name
   database_name         = azurerm_cosmosdb_sql_database.tag.name
   partition_key_path    = "/file_path"
   partition_key_version = 1
@@ -135,7 +123,7 @@ resource "azurerm_cosmosdb_sql_container" "tag" {
 
 resource "azurerm_key_vault_secret" "COSMOSDB_KEY" {
   name         = "COSMOSDB-KEY"
-  value        = azurerm_cosmosdb_account.example.primary_key
+  value        = module.CosmosDB.primary_key
   key_vault_id = module.KeyVault.id
 }
 
@@ -188,7 +176,7 @@ resource "azurerm_linux_web_app" "web" {
     "COSMOSDB_LOG_DATABASE_NAME"            = local.COSMOSDB_LOG_DATABASE_NAME
     "COSMOSDB_TAGS_CONTAINER_NAME"          = local.COSMOSDB_TAGS_CONTAINER_NAME
     "COSMOSDB_TAGS_DATABASE_NAME"           = local.COSMOSDB_TAGS_DATABASE_NAME
-    "COSMOSDB_URL"                          = azurerm_cosmosdb_account.example.endpoint
+    "COSMOSDB_URL"                          = module.CosmosDB.endpoint
     "EMBEDDING_DEPLOYMENT_NAME"             = "text-embedding-ada-002"
     "ENABLE_ORYX_BUILD"                     = "True"
     "ENRICHMENT_APPSERVICE_NAME"            = azurerm_linux_web_app.enrichment.name
@@ -403,7 +391,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     "COSMOSDB_LOG_DATABASE_NAME"             = local.COSMOSDB_LOG_DATABASE_NAME
     "COSMOSDB_TAGS_CONTAINER_NAME"           = local.COSMOSDB_TAGS_CONTAINER_NAME
     "COSMOSDB_TAGS_DATABASE_NAME"            = local.COSMOSDB_TAGS_DATABASE_NAME
-    "COSMOSDB_URL"                           = azurerm_cosmosdb_account.example.endpoint
+    "COSMOSDB_URL"                           = module.CosmosDB.endpoint
     "DEQUEUE_MESSAGE_BATCH_SIZE"             = "3"
     "EMBEDDINGS_QUEUE"                       = "embeddings-queue"
     "EMBEDDING_REQUEUE_BACKOFF"              = "60"
@@ -576,7 +564,7 @@ resource "azurerm_linux_function_app" "example" {
     "COSMOSDB_LOG_DATABASE_NAME"                 = local.COSMOSDB_LOG_DATABASE_NAME
     "COSMOSDB_TAGS_CONTAINER_NAME"               = local.COSMOSDB_TAGS_CONTAINER_NAME
     "COSMOSDB_TAGS_DATABASE_NAME"                = local.COSMOSDB_TAGS_DATABASE_NAME
-    "COSMOSDB_URL"                               = azurerm_cosmosdb_account.example.endpoint
+    "COSMOSDB_URL"                               = module.CosmosDB.endpoint
     "EMBEDDINGS_QUEUE"                           = "embeddings-queue"
     "ENABLE_DEV_CODE"                            = "False"
     "ENRICHMENT_BACKOFF"                         = "60"
