@@ -33,32 +33,30 @@ module "KeyVault" {
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
-  name                 = "infoasst-kv-geprk"
+  name                            = "infoasst-kv-geprk"
   enabled_for_template_deployment = true
-  private_dns_zone_ids = [azurerm_private_dns_zone.example.id]
-  subnet_id            = "${azurerm_virtual_network.example.id}/subnets/subnet1"
-  tags                 = local.tags
-  tenant_id            = data.azurerm_client_config.current.tenant_id
+  private_dns_zone_ids            = [azurerm_private_dns_zone.example.id]
+  subnet_id                       = "${azurerm_virtual_network.example.id}/subnets/subnet1"
+  tags                            = local.tags
+  tenant_id                       = data.azurerm_client_config.current.tenant_id
 }
 
-resource "azurerm_search_service" "example" {
+module "SearchService" {
+  source = "./_modules/SearchService"
+
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+
   name                        = "infoasst-search-geprk"
-  resource_group_name         = azurerm_resource_group.example.name
-  location                    = azurerm_resource_group.example.location
-  sku                         = "standard"
   authentication_failure_mode = "http401WithBearerChallenge"
-  semantic_search_sku         = "free"
-
-  identity {
-    type = "SystemAssigned"
-  }
-
-  tags = local.tags
+  private_dns_zone_ids        = [azurerm_private_dns_zone.example.id]
+  subnet_id                   = "${azurerm_virtual_network.example.id}/subnets/subnet1"
+  tags                        = local.tags
 }
 
 resource "azurerm_key_vault_secret" "AZURE_SEARCH_SERVICE_KEY" {
   name         = "AZURE-SEARCH-SERVICE-KEY"
-  value        = azurerm_search_service.example.primary_key
+  value        = module.SearchService.primary_key
   key_vault_id = module.KeyVault.id
 }
 
@@ -179,8 +177,8 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_OPENAI_SERVICE"                  = azurerm_cognitive_account.open_ai.name
     "AZURE_OPENAI_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                    = "vector-index"
-    "AZURE_SEARCH_SERVICE"                  = azurerm_search_service.example.name
-    "AZURE_SEARCH_SERVICE_ENDPOINT"         = "https://${azurerm_search_service.example.name}.search.windows.net/"
+    "AZURE_SEARCH_SERVICE"                  = module.SearchService.name
+    "AZURE_SEARCH_SERVICE_ENDPOINT"         = module.SearchService.endpoint
     "AZURE_SEARCH_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "AZURE_SUBSCRIPTION_ID"                 = data.azurerm_client_config.current.subscription_id
     "AZURE_TENANT_ID"                       = data.azurerm_client_config.current.tenant_id
@@ -396,8 +394,8 @@ resource "azurerm_linux_web_app" "enrichment" {
     "AZURE_OPENAI_SERVICE"                   = azurerm_cognitive_account.open_ai.name
     "AZURE_OPENAI_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                     = "vector-index"
-    "AZURE_SEARCH_SERVICE"                   = azurerm_search_service.example.name
-    "AZURE_SEARCH_SERVICE_ENDPOINT"          = "https://infoasst-search-geprk.search.windows.net/"
+    "AZURE_SEARCH_SERVICE"                   = module.SearchService.name
+    "AZURE_SEARCH_SERVICE_ENDPOINT"          = module.SearchService.endpoint
     "AZURE_SEARCH_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "BLOB_CONNECTION_STRING"                 = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
     "COSMOSDB_KEY"                           = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/COSMOSDB-KEY)"
@@ -564,7 +562,7 @@ resource "azurerm_linux_function_app" "example" {
     "AZURE_FORM_RECOGNIZER_ENDPOINT"             = "https://${azurerm_cognitive_account.form_recognizer.name}.cognitiveservices.azure.com/"
     "AZURE_FORM_RECOGNIZER_KEY"                  = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-FORM-RECOGNIZER-KEY)"
     "AZURE_SEARCH_INDEX"                         = "vector-index"
-    "AZURE_SEARCH_SERVICE_ENDPOINT"              = "https://${azurerm_search_service.example.name}.search.windows.net/"
+    "AZURE_SEARCH_SERVICE_ENDPOINT"              = module.SearchService.endpoint
     "AZURE_SEARCH_SERVICE_KEY"                   = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "BLOB_CONNECTION_STRING"                     = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
     "BLOB_STORAGE_ACCOUNT"                       = azurerm_storage_account.infoasststoregeprk.name
