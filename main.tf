@@ -147,7 +147,7 @@ resource "azurerm_linux_web_app" "web" {
     "APPINSIGHTS_INSTRUMENTATIONKEY"        = azurerm_application_insights.example.instrumentation_key
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = azurerm_application_insights.example.connection_string
     "APPLICATION_TITLE"                     = ""
-    "AZURE_BLOB_STORAGE_ACCOUNT"            = azurerm_storage_account.infoasststoregeprk.name
+    "AZURE_BLOB_STORAGE_ACCOUNT"            = module.StorageAccount.name
     "AZURE_BLOB_STORAGE_CONTAINER"          = "content"
     "AZURE_BLOB_STORAGE_ENDPOINT"           = "https://infoasststoregeprk.blob.core.windows.net/"
     "AZURE_BLOB_STORAGE_KEY"                = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
@@ -155,7 +155,7 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_CLIENT_ID"                       = local.azure_client_id
     "AZURE_CLIENT_SECRET"                   = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-CLIENT-SECRET)"
     "AZURE_KEY_VAULT_ENDPOINT"              = module.KeyVault.vault_uri
-    "AZURE_MANAGEMENT_URL"                  = local.management_url
+    "AZURE_MANAGEMENT_URL"                  = local.azure_management_url
     "AZURE_OPENAI_CHATGPT_DEPLOYMENT"       = "gpt-35-turbo-16k"
     "AZURE_OPENAI_CHATGPT_MODEL_NAME"       = ""
     "AZURE_OPENAI_CHATGPT_MODEL_VERSION"    = ""
@@ -164,7 +164,7 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_OPENAI_RESOURCE_GROUP"           = azurerm_cognitive_account.open_ai.resource_group_name
     "AZURE_OPENAI_SERVICE"                  = azurerm_cognitive_account.open_ai.name
     "AZURE_OPENAI_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
-    "AZURE_SEARCH_INDEX"                    = "vector-index"
+    "AZURE_SEARCH_INDEX"                    = local.AZURE_SEARCH_INDEX
     "AZURE_SEARCH_SERVICE"                  = module.SearchService.name
     "AZURE_SEARCH_SERVICE_ENDPOINT"         = module.SearchService.endpoint
     "AZURE_SEARCH_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
@@ -231,7 +231,7 @@ resource "azurerm_linux_web_app" "web" {
       jwt_allowed_client_applications = []
       jwt_allowed_groups              = []
       login_parameters                = {}
-      tenant_auth_endpoint            = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/v2.0"
+      tenant_auth_endpoint            = local.tenant_auth_endpoint
       www_authentication_disabled     = false
     }
 
@@ -372,7 +372,7 @@ resource "azurerm_linux_web_app" "enrichment" {
 
   app_settings = {
     "APPLICATIONINSIGHTS_CONNECTION_STRING"  = azurerm_application_insights.example.connection_string
-    "AZURE_BLOB_STORAGE_ACCOUNT"             = azurerm_storage_account.infoasststoregeprk.name
+    "AZURE_BLOB_STORAGE_ACCOUNT"             = module.StorageAccount.name
     "AZURE_BLOB_STORAGE_CONTAINER"           = "content"
     "AZURE_BLOB_STORAGE_ENDPOINT"            = "https://infoasststoregeprk.blob.core.windows.net/"
     "AZURE_BLOB_STORAGE_KEY"                 = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
@@ -381,7 +381,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     "AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME" = "text-embedding-ada-002"
     "AZURE_OPENAI_SERVICE"                   = azurerm_cognitive_account.open_ai.name
     "AZURE_OPENAI_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
-    "AZURE_SEARCH_INDEX"                     = "vector-index"
+    "AZURE_SEARCH_INDEX"                     = local.AZURE_SEARCH_INDEX
     "AZURE_SEARCH_SERVICE"                   = module.SearchService.name
     "AZURE_SEARCH_SERVICE_ENDPOINT"          = module.SearchService.endpoint
     "AZURE_SEARCH_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
@@ -541,19 +541,19 @@ resource "azurerm_linux_function_app" "example" {
 
   builtin_logging_enabled    = false
   client_certificate_mode    = "Required"
-  storage_account_name       = azurerm_storage_account.infoasststoregeprk.name
-  storage_account_access_key = azurerm_storage_account.infoasststoregeprk.primary_access_key
+  storage_account_name       = module.StorageAccount.name
+  storage_account_access_key = module.StorageAccount.primary_access_key
   service_plan_id            = azurerm_service_plan.example3.id
 
   app_settings = {
     "AZURE_BLOB_STORAGE_KEY"                     = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
     "AZURE_FORM_RECOGNIZER_ENDPOINT"             = "https://${azurerm_cognitive_account.form_recognizer.name}.cognitiveservices.azure.com/"
     "AZURE_FORM_RECOGNIZER_KEY"                  = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-FORM-RECOGNIZER-KEY)"
-    "AZURE_SEARCH_INDEX"                         = "vector-index"
+    "AZURE_SEARCH_INDEX"                         = local.AZURE_SEARCH_INDEX
     "AZURE_SEARCH_SERVICE_ENDPOINT"              = module.SearchService.endpoint
     "AZURE_SEARCH_SERVICE_KEY"                   = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
     "BLOB_CONNECTION_STRING"                     = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
-    "BLOB_STORAGE_ACCOUNT"                       = azurerm_storage_account.infoasststoregeprk.name
+    "BLOB_STORAGE_ACCOUNT"                       = module.StorageAccount.name
     "BLOB_STORAGE_ACCOUNT_ENDPOINT"              = "https://infoasststoregeprk.blob.core.windows.net/"
     "BLOB_STORAGE_ACCOUNT_LOG_CONTAINER_NAME"    = "logs"
     "BLOB_STORAGE_ACCOUNT_OUTPUT_CONTAINER_NAME" = "content"
@@ -594,7 +594,7 @@ resource "azurerm_linux_function_app" "example" {
 
   connection_string {
     name  = "BLOB_CONNECTION_STRING"
-    value = azurerm_storage_account.infoasststoregeprk.primary_connection_string
+    value = module.StorageAccount.primary_connection_string
     type  = "MySql"
   }
 
@@ -720,115 +720,109 @@ resource "azurerm_application_insights" "example" {
   tags = local.tags
 }
 
-resource "azurerm_storage_account" "infoasststoregeprk" {
-  name                            = "infoasststoregeprk"
-  resource_group_name             = azurerm_resource_group.example.name
-  location                        = azurerm_resource_group.example.location
-  account_tier                    = "Standard"
-  account_replication_type        = "LRS"
-  allow_nested_items_to_be_public = false
+module "StorageAccount" {
+  source = "./_modules/StorageAccount"
 
-  blob_properties {
-    delete_retention_policy {
-      days = 7
-    }
-  }
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
 
-  tags = local.tags
+  name                     = "infoasststoregeprk"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  private_dns_zone_ids     = [azurerm_private_dns_zone.example.id]
+  subnet_id                = "${azurerm_virtual_network.example.id}/subnets/subnet1"
+  tags                     = local.tags
 }
 
 resource "azurerm_storage_container" "content" {
   name                  = "content"
-  storage_account_name  = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name  = module.StorageAccount.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "logs" {
   name                  = "logs"
-  storage_account_name  = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name  = module.StorageAccount.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "function" {
   name                  = "function"
-  storage_account_name  = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name  = module.StorageAccount.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "upload" {
   name                  = "upload"
-  storage_account_name  = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name  = module.StorageAccount.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "website" {
   name                  = "website"
-  storage_account_name  = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name  = module.StorageAccount.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_queue" "pdf_submit_queue" {
   name                 = "pdf-submit-queue"
-  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "pdf_polling_queue" {
   name                 = "pdf-polling-queue"
-  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "non_pdf_submit_queue" {
   name                 = "non-pdf-submit-queue"
-  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "media_submit_queue" {
   name                 = "media-submit-queue"
-  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "text_enrichment_queue" {
   name                 = "text-enrichment-queue"
-  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "image_enrichment_queue" {
   name                 = "image-enrichment-queue"
-  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "embeddings_queue" {
   name                 = "embeddings-queue"
-  storage_account_name = azurerm_storage_account.infoasststoregeprk.name
+  storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_key_vault_secret" "AZURE_BLOB_STORAGE_KEY" {
   name         = "AZURE-BLOB-STORAGE-KEY"
-  value        = azurerm_storage_account.infoasststoregeprk.primary_access_key
+  value        = module.StorageAccount.primary_access_key
   key_vault_id = module.KeyVault.id
 }
 
 resource "azurerm_key_vault_secret" "BLOB_CONNECTION_STRING" {
   name         = "BLOB-CONNECTION-STRING"
-  value        = azurerm_storage_account.infoasststoregeprk.primary_connection_string
+  value        = module.StorageAccount.primary_connection_string
   key_vault_id = module.KeyVault.id
 }
 
-resource "azurerm_storage_account" "infoasststoremediageprk" {
-  name                            = "infoasststoremediageprk"
-  resource_group_name             = azurerm_resource_group.example.name
-  location                        = azurerm_resource_group.example.location
-  account_tier                    = "Standard"
-  account_replication_type        = "LRS"
-  allow_nested_items_to_be_public = false
+module "StorageAccountMedia" {
+  source = "./_modules/StorageAccount"
 
-  blob_properties {
-    delete_retention_policy {
-      days = 7
-    }
-  }
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
 
-  tags = local.tags
+  name                     = "infoasststoremediageprk"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  private_dns_zone_ids     = [azurerm_private_dns_zone.example.id]
+  subnet_id                = "${azurerm_virtual_network.example.id}/subnets/subnet1"
+  tags                     = local.tags
 }
 
 resource "azurerm_media_services_account" "example" {
@@ -838,7 +832,7 @@ resource "azurerm_media_services_account" "example" {
 
   public_network_access_enabled = false
   storage_account {
-    id         = azurerm_storage_account.infoasststoremediageprk.id
+    id         = module.StorageAccountMedia.id
     is_primary = true
   }
 
