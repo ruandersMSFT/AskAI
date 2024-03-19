@@ -8,6 +8,9 @@ locals {
   COSMOSDB_TAGS_DATABASE_NAME  = "tagdb"
 
   AZURE_SEARCH_INDEX = "vector-index"
+  AZURE_FORM_RECOGNIZER_KEY = "AZURE-FORM-RECOGNIZER-KEY"
+  AZURE_SEARCH_SERVICE_KEY = "AZURE-SEARCH-SERVICE-KEY"
+
 
   tenant_auth_endpoint = "https://sts.windows.net/${data.azurerm_client_config.current.tenant_id}/v2.0"
 

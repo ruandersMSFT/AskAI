@@ -54,8 +54,8 @@ module "SearchService" {
   tags                        = local.tags
 }
 
-resource "azurerm_key_vault_secret" "AZURE_SEARCH_SERVICE_KEY" {
-  name         = "AZURE-SEARCH-SERVICE-KEY"
+resource "azurerm_key_vault_secret" "search_service_key" {
+  name         = local.AZURE_SEARCH_SERVICE_KEY
   value        = module.SearchService.primary_key
   key_vault_id = module.KeyVault.id
 }
@@ -149,7 +149,7 @@ resource "azurerm_linux_web_app" "web" {
     "APPLICATION_TITLE"                     = ""
     "AZURE_BLOB_STORAGE_ACCOUNT"            = module.StorageAccount.name
     "AZURE_BLOB_STORAGE_CONTAINER"          = "content"
-    "AZURE_BLOB_STORAGE_ENDPOINT"           = "https://infoasststoregeprk.blob.core.windows.net/"
+    "AZURE_BLOB_STORAGE_ENDPOINT"           = module.StorageAccount.primary_blob_endpoint
     "AZURE_BLOB_STORAGE_KEY"                = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
     "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"   = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "AZURE_CLIENT_ID"                       = local.azure_client_id
@@ -167,7 +167,7 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_SEARCH_INDEX"                    = local.AZURE_SEARCH_INDEX
     "AZURE_SEARCH_SERVICE"                  = module.SearchService.name
     "AZURE_SEARCH_SERVICE_ENDPOINT"         = module.SearchService.endpoint
-    "AZURE_SEARCH_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
+    "AZURE_SEARCH_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/${local.AZURE_SEARCH_SERVICE_KEY})"
     "AZURE_SUBSCRIPTION_ID"                 = data.azurerm_client_config.current.subscription_id
     "AZURE_TENANT_ID"                       = data.azurerm_client_config.current.tenant_id
     "CHAT_WARNING_BANNER_TEXT"              = ""
@@ -284,7 +284,6 @@ resource "azurerm_linux_web_app" "web" {
 
     cors {
       allowed_origins = [
-        "https://ms.portal.azure.com",
         "https://portal.azure.com",
       ]
       support_credentials = false
@@ -374,7 +373,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     "APPLICATIONINSIGHTS_CONNECTION_STRING"  = azurerm_application_insights.example.connection_string
     "AZURE_BLOB_STORAGE_ACCOUNT"             = module.StorageAccount.name
     "AZURE_BLOB_STORAGE_CONTAINER"           = "content"
-    "AZURE_BLOB_STORAGE_ENDPOINT"            = "https://infoasststoregeprk.blob.core.windows.net/"
+    "AZURE_BLOB_STORAGE_ENDPOINT"            = module.StorageAccount.primary_blob_endpoint
     "AZURE_BLOB_STORAGE_KEY"                 = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
     "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"    = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "AZURE_KEY_VAULT_ENDPOINT"               = module.KeyVault.vault_uri
@@ -384,7 +383,7 @@ resource "azurerm_linux_web_app" "enrichment" {
     "AZURE_SEARCH_INDEX"                     = local.AZURE_SEARCH_INDEX
     "AZURE_SEARCH_SERVICE"                   = module.SearchService.name
     "AZURE_SEARCH_SERVICE_ENDPOINT"          = module.SearchService.endpoint
-    "AZURE_SEARCH_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
+    "AZURE_SEARCH_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/${local.AZURE_SEARCH_SERVICE_KEY})"
     "BLOB_CONNECTION_STRING"                 = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
     "COSMOSDB_KEY"                           = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/COSMOSDB-KEY)"
     "COSMOSDB_LOG_CONTAINER_NAME"            = local.COSMOSDB_LOG_CONTAINER_NAME
@@ -548,13 +547,13 @@ resource "azurerm_linux_function_app" "example" {
   app_settings = {
     "AZURE_BLOB_STORAGE_KEY"                     = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
     "AZURE_FORM_RECOGNIZER_ENDPOINT"             = "https://${azurerm_cognitive_account.form_recognizer.name}.cognitiveservices.azure.com/"
-    "AZURE_FORM_RECOGNIZER_KEY"                  = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-FORM-RECOGNIZER-KEY)"
+    "AZURE_FORM_RECOGNIZER_KEY"                  = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/${local.AZURE_FORM_RECOGNIZER_KEY})"
     "AZURE_SEARCH_INDEX"                         = local.AZURE_SEARCH_INDEX
     "AZURE_SEARCH_SERVICE_ENDPOINT"              = module.SearchService.endpoint
-    "AZURE_SEARCH_SERVICE_KEY"                   = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-SEARCH-SERVICE-KEY)"
+    "AZURE_SEARCH_SERVICE_KEY"                   = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/${local.AZURE_SEARCH_SERVICE_KEY})"
     "BLOB_CONNECTION_STRING"                     = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
     "BLOB_STORAGE_ACCOUNT"                       = module.StorageAccount.name
-    "BLOB_STORAGE_ACCOUNT_ENDPOINT"              = "https://infoasststoregeprk.blob.core.windows.net/"
+    "BLOB_STORAGE_ACCOUNT_ENDPOINT"              = module.StorageAccount.primary_blob_endpoint
     "BLOB_STORAGE_ACCOUNT_LOG_CONTAINER_NAME"    = "logs"
     "BLOB_STORAGE_ACCOUNT_OUTPUT_CONTAINER_NAME" = "content"
     "BLOB_STORAGE_ACCOUNT_UPLOAD_CONTAINER_NAME" = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
@@ -675,8 +674,8 @@ resource "azurerm_cognitive_account" "form_recognizer" {
   tags = local.tags
 }
 
-resource "azurerm_key_vault_secret" "AZURE_FORM_RECOGNIZER_KEY" {
-  name         = "AZURE-FORM-RECOGNIZER-KEY"
+resource "azurerm_key_vault_secret" "form_recognizer_key" {
+  name         = local.AZURE_FORM_RECOGNIZER_KEY
   value        = azurerm_cognitive_account.form_recognizer.primary_access_key
   key_vault_id = module.KeyVault.id
 }
