@@ -138,7 +138,7 @@ resource "azurerm_service_plan" "example1" {
 }
 
 resource "azurerm_linux_web_app" "web" {
-  name                = "infoasst-web-geprk"
+  name                = local.web_app_name
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_service_plan.example1.location
   service_plan_id     = azurerm_service_plan.example1.id
@@ -223,7 +223,7 @@ resource "azurerm_linux_web_app" "web" {
     active_directory_v2 {
       allowed_applications = []
       allowed_audiences = [
-        "api://infoasst-web-geprk",
+        "api://${local.web_app_name}",
       ]
       allowed_groups                  = []
       allowed_identities              = []

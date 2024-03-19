@@ -20,4 +20,6 @@ locals {
     "FISMA_Id"      = ""
     "TerraformRepo" = "SomePath"
   }
+
+  web_app_name = "infoasst-web-geprk"
 }
