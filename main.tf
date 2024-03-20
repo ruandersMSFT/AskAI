@@ -370,7 +370,7 @@ resource "azurerm_service_plan" "function" {
 }
 
 resource "azurerm_monitor_autoscale_setting" "function" {
-  name                = "${app_service_plan_function_name}-Autoscale"
+  name                = "${local.app_service_plan_function_name}-Autoscale"
   resource_group_name = azurerm_service_plan.function.name
   location            = azurerm_service_plan.function.location
   target_resource_id  = azurerm_service_plan.function.id
