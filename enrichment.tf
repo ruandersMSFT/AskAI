@@ -1,9 +1,10 @@
 resource "azurerm_service_plan" "enrichment" {
+  app_service_environment_id   = module.AppServiceEnvironment.id
   name                         = local.app_service_plan_enrichment_name
   resource_group_name          = azurerm_resource_group.example.name
   location                     = azurerm_resource_group.example.location
   os_type                      = "Linux"
-  sku_name                     = "P1v3"
+  sku_name                     = "I1v2"
   per_site_scaling_enabled     = false
   maximum_elastic_worker_count = 3
   zone_balancing_enabled       = false

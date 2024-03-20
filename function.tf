@@ -1,9 +1,10 @@
 resource "azurerm_service_plan" "function" {
-  name                = local.app_service_plan_function_name
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  os_type             = "Linux"
-  sku_name            = "S2"
+  app_service_environment_id = module.AppServiceEnvironment.id
+  name                       = local.app_service_plan_function_name
+  resource_group_name        = azurerm_resource_group.example.name
+  location                   = azurerm_resource_group.example.location
+  os_type                    = "Linux"
+  sku_name                   = "I1v2"
 
   tags = local.tags
 }

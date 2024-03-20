@@ -1,10 +1,11 @@
 resource "azurerm_service_plan" "web" {
-  name                = local.app_service_plan_web_name
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  os_type             = "Linux"
-  sku_name            = "S1"
-  tags                = local.tags
+  app_service_environment_id = module.AppServiceEnvironment.id
+  name                       = local.app_service_plan_web_name
+  resource_group_name        = azurerm_resource_group.example.name
+  location                   = azurerm_resource_group.example.location
+  os_type                    = "Linux"
+  sku_name                   = "I1v2"
+  tags                       = local.tags
 }
 
 resource "azurerm_linux_web_app" "web" {
