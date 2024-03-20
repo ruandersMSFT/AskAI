@@ -1,6 +1,15 @@
 locals {
   location = "EastUS"
   
+  search_service_name = "infoasst-search-geprk"
+  web_app_name = "infoasst-web-geprk"
+  app_service_plan_web_name = "infoasst-asp-geprk"
+  app_service_plan_enrichment_name = "infoasst-enrichmentasp-geprk"
+  web_enrichment_name = "infoasst-enrichmentweb-geprk"
+  app_service_plan_function_name = "infoasst-func-asp-geprk"
+  function_name = "infoasst-func-geprk"
+
+
   azure_client_id      = "3aff5d4e-1f13-4a7d-947e-612aae549f5d" # Russell's Tenant
   azure_management_url = "https://management.core.windows.net/"
 
@@ -23,5 +32,4 @@ locals {
     "TerraformRepo" = "SomePath"
   }
 
-  web_app_name = "infoasst-web-geprk"
 }

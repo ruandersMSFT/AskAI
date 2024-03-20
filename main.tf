@@ -9,41 +9,21 @@ resource "azurerm_resource_group" "example" {
   tags = local.tags
 }
 
-resource "azurerm_private_dns_zone" "example" {
-  name                = "mydomain.com"
-  resource_group_name = azurerm_resource_group.example.name
-}
-
-resource "azurerm_virtual_network" "example" {
-  name                = "example-network"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  address_space       = ["10.0.0.0/16"]
-  dns_servers         = ["10.0.0.4", "10.0.0.5"]
-
-  subnet {
-    name           = "subnet1"
-    address_prefix = "10.0.1.0/24"
-  }
-}
-
 module "SearchService" {
   source = "./_modules/SearchService"
 
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
-  name                        = "infoasst-search-geprk"
+  name                        = local.search_service_name
   authentication_failure_mode = "http401WithBearerChallenge"
   private_dns_zone_ids        = [azurerm_private_dns_zone.example.id]
   subnet_id                   = "${azurerm_virtual_network.example.id}/subnets/subnet1"
   tags                        = local.tags
 }
 
-
-
-resource "azurerm_service_plan" "example1" {
-  name                = "infoasst-asp-geprk"
+resource "azurerm_service_plan" "web" {
+  name                = local.app_service_plan_web_name
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_resource_group.example.location
   os_type             = "Linux"
@@ -54,8 +34,8 @@ resource "azurerm_service_plan" "example1" {
 resource "azurerm_linux_web_app" "web" {
   name                = local.web_app_name
   resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_service_plan.example1.location
-  service_plan_id     = azurerm_service_plan.example1.id
+  location            = azurerm_service_plan.web.location
+  service_plan_id     = azurerm_service_plan.web.id
 
   app_settings = {
     "APPINSIGHTS_INSTRUMENTATIONKEY"        = azurerm_application_insights.example.instrumentation_key
@@ -207,8 +187,8 @@ resource "azurerm_linux_web_app" "web" {
   tags = local.tags
 }
 
-resource "azurerm_service_plan" "example2" {
-  name                         = "infoasst-enrichmentasp-geprk"
+resource "azurerm_service_plan" "enrichment" {
+  name                         = local.app_service_plan_enrichment_name
   resource_group_name          = azurerm_resource_group.example.name
   location                     = azurerm_resource_group.example.location
   os_type                      = "Linux"
@@ -219,12 +199,11 @@ resource "azurerm_service_plan" "example2" {
   tags                         = local.tags
 }
 
-
-resource "azurerm_monitor_autoscale_setting" "example2" {
-  name                = "iinfoasst-enrichmentasp-geprk-Autoscale"
-  resource_group_name = azurerm_service_plan.example2.name
-  location            = azurerm_service_plan.example2.location
-  target_resource_id  = azurerm_service_plan.example2.id
+resource "azurerm_monitor_autoscale_setting" "enrichment" {
+  name                = "${local.app_service_plan_enrichment_name}-Autoscale"
+  resource_group_name = azurerm_service_plan.enrichment.name
+  location            = azurerm_service_plan.enrichment.location
+  target_resource_id  = azurerm_service_plan.enrichment.id
 
   profile {
     name = "Scale out condition"
@@ -238,7 +217,7 @@ resource "azurerm_monitor_autoscale_setting" "example2" {
     rule {
       metric_trigger {
         metric_name        = "CpuPercentage"
-        metric_resource_id = azurerm_service_plan.example2.id
+        metric_resource_id = azurerm_service_plan.enrichment.id
         time_grain         = "PT1M"
         statistic          = "Average"
         time_window        = "PT5M"
@@ -258,7 +237,7 @@ resource "azurerm_monitor_autoscale_setting" "example2" {
     rule {
       metric_trigger {
         metric_name        = "CpuPercentage"
-        metric_resource_id = azurerm_service_plan.example2.id
+        metric_resource_id = azurerm_service_plan.enrichment.id
         time_grain         = "PT1M"
         statistic          = "Average"
         time_window        = "PT10M"
@@ -278,10 +257,10 @@ resource "azurerm_monitor_autoscale_setting" "example2" {
 }
 
 resource "azurerm_linux_web_app" "enrichment" {
-  name                = "infoasst-enrichmentweb-geprk"
+  name                = local.web_enrichment_name
   resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_service_plan.example2.location
-  service_plan_id     = azurerm_service_plan.example2.id
+  location            = azurerm_service_plan.enrichment.location
+  service_plan_id     = azurerm_service_plan.enrichment.id
 
   app_settings = {
     "APPLICATIONINSIGHTS_CONNECTION_STRING"  = azurerm_application_insights.example.connection_string
@@ -380,8 +359,8 @@ resource "azurerm_linux_web_app" "enrichment" {
   }
 }
 
-resource "azurerm_service_plan" "example3" {
-  name                = "infoasst-func-asp-geprk"
+resource "azurerm_service_plan" "function" {
+  name                = local.app_service_plan_function_name
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_resource_group.example.location
   os_type             = "Linux"
@@ -390,11 +369,11 @@ resource "azurerm_service_plan" "example3" {
   tags = local.tags
 }
 
-resource "azurerm_monitor_autoscale_setting" "example3" {
-  name                = "infoasst-func-asp-geprk-Autoscale"
-  resource_group_name = azurerm_service_plan.example3.name
-  location            = azurerm_service_plan.example3.location
-  target_resource_id  = azurerm_service_plan.example3.id
+resource "azurerm_monitor_autoscale_setting" "function" {
+  name                = "${app_service_plan_function_name}-Autoscale"
+  resource_group_name = azurerm_service_plan.function.name
+  location            = azurerm_service_plan.function.location
+  target_resource_id  = azurerm_service_plan.function.id
 
   profile {
     name = "defaultProfile"
@@ -408,7 +387,7 @@ resource "azurerm_monitor_autoscale_setting" "example3" {
     rule {
       metric_trigger {
         metric_name        = "CpuPercentage"
-        metric_resource_id = azurerm_service_plan.example3.id
+        metric_resource_id = azurerm_service_plan.function.id
         time_grain         = "PT1M"
         statistic          = "Average"
         time_window        = "PT5M"
@@ -428,7 +407,7 @@ resource "azurerm_monitor_autoscale_setting" "example3" {
     rule {
       metric_trigger {
         metric_name        = "CpuPercentage"
-        metric_resource_id = azurerm_service_plan.example3.id
+        metric_resource_id = azurerm_service_plan.function.id
         time_grain         = "PT1M"
         statistic          = "Average"
         time_window        = "PT5M"
@@ -447,8 +426,8 @@ resource "azurerm_monitor_autoscale_setting" "example3" {
   }
 }
 
-resource "azurerm_linux_function_app" "example" {
-  name                = "infoasst-func-geprk"
+resource "azurerm_linux_function_app" "function" {
+  name                = local.function_name
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
@@ -456,7 +435,7 @@ resource "azurerm_linux_function_app" "example" {
   client_certificate_mode    = "Required"
   storage_account_name       = module.StorageAccount.name
   storage_account_access_key = module.StorageAccount.primary_access_key
-  service_plan_id            = azurerm_service_plan.example3.id
+  service_plan_id            = azurerm_service_plan.function.id
 
   app_settings = {
     "AZURE_BLOB_STORAGE_KEY"                     = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
@@ -558,38 +537,6 @@ resource "azurerm_linux_function_app" "example" {
   tags = local.tags
 }
 
-module "cognitive_account_form_recognizer" {
-  source = "./_modules/CognitiveAccount"
-
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-
-  custom_subdomain_name = "infoasst-fr-geprk"
-  kind                  = "FormRecognizer"
-  name                  = "infoasst-fr-geprk"
-  private_dns_zone_ids            = [azurerm_private_dns_zone.example.id]
-  sku_name = "S0"
-  subnet_id                       = "${azurerm_virtual_network.example.id}/subnets/subnet1"
-  tags = local.tags
-}
-
-
-
-module "cognitive_account_enrichment" {
-  source = "./_modules/CognitiveAccount"
-
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-
-  kind                  = "CognitiveServices"
-  name                  = "infoasst-enrichment-cog-geprk"
-  private_dns_zone_ids            = [azurerm_private_dns_zone.example.id]
-  sku_name = "S0"
-  subnet_id                       = "${azurerm_virtual_network.example.id}/subnets/subnet1"
-  tags = local.tags
-}
-
-
 resource "azurerm_log_analytics_workspace" "example" {
   name                = "infoasst-la-geprk"
   location            = azurerm_resource_group.example.location
@@ -609,101 +556,6 @@ resource "azurerm_application_insights" "example" {
   workspace_id        = azurerm_log_analytics_workspace.example.id
 
   tags = local.tags
-}
-
-module "StorageAccount" {
-  source = "./_modules/StorageAccount"
-
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-
-  name                     = "infoasststoregeprk"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  private_dns_zone_ids     = [azurerm_private_dns_zone.example.id]
-  subnet_id                = "${azurerm_virtual_network.example.id}/subnets/subnet1"
-  tags                     = local.tags
-}
-
-resource "azurerm_storage_container" "content" {
-  name                  = "content"
-  storage_account_name  = module.StorageAccount.name
-  container_access_type = "private"
-}
-
-resource "azurerm_storage_container" "logs" {
-  name                  = "logs"
-  storage_account_name  = module.StorageAccount.name
-  container_access_type = "private"
-}
-
-resource "azurerm_storage_container" "function" {
-  name                  = "function"
-  storage_account_name  = module.StorageAccount.name
-  container_access_type = "private"
-}
-
-resource "azurerm_storage_container" "upload" {
-  name                  = "upload"
-  storage_account_name  = module.StorageAccount.name
-  container_access_type = "private"
-}
-
-resource "azurerm_storage_container" "website" {
-  name                  = "website"
-  storage_account_name  = module.StorageAccount.name
-  container_access_type = "private"
-}
-
-resource "azurerm_storage_queue" "pdf_submit_queue" {
-  name                 = "pdf-submit-queue"
-  storage_account_name = module.StorageAccount.name
-}
-
-resource "azurerm_storage_queue" "pdf_polling_queue" {
-  name                 = "pdf-polling-queue"
-  storage_account_name = module.StorageAccount.name
-}
-
-resource "azurerm_storage_queue" "non_pdf_submit_queue" {
-  name                 = "non-pdf-submit-queue"
-  storage_account_name = module.StorageAccount.name
-}
-
-resource "azurerm_storage_queue" "media_submit_queue" {
-  name                 = "media-submit-queue"
-  storage_account_name = module.StorageAccount.name
-}
-
-resource "azurerm_storage_queue" "text_enrichment_queue" {
-  name                 = "text-enrichment-queue"
-  storage_account_name = module.StorageAccount.name
-}
-
-resource "azurerm_storage_queue" "image_enrichment_queue" {
-  name                 = "image-enrichment-queue"
-  storage_account_name = module.StorageAccount.name
-}
-
-resource "azurerm_storage_queue" "embeddings_queue" {
-  name                 = "embeddings-queue"
-  storage_account_name = module.StorageAccount.name
-}
-
-
-
-module "StorageAccountMedia" {
-  source = "./_modules/StorageAccount"
-
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-
-  name                     = "infoasststoremediageprk"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  private_dns_zone_ids     = [azurerm_private_dns_zone.example.id]
-  subnet_id                = "${azurerm_virtual_network.example.id}/subnets/subnet1"
-  tags                     = local.tags
 }
 
 resource "azurerm_media_services_account" "example" {
@@ -792,7 +644,7 @@ resource "azurerm_application_insights_workbook_template" "example" {
 resource "azurerm_key_vault_access_policy" "function_app" {
   key_vault_id = module.KeyVault.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_linux_function_app.example.identity[0].principal_id
+  object_id    = azurerm_linux_function_app.function.identity[0].principal_id
 
   secret_permissions = [
     "Get",
@@ -920,7 +772,7 @@ resource "azurerm_role_assignment" "backend_search" {
 resource "azurerm_role_assignment" "function_storage" {
   scope                = azurerm_resource_group.example.id
   role_definition_name = "Storage Blob Data Reader" # 2a2b9908-6ea1-4ae2-8e65-a410df84e7d1
-  principal_id         = azurerm_linux_function_app.example.identity[0].principal_id
+  principal_id         = azurerm_linux_function_app.function.identity[0].principal_id
 }
 
 resource "azurerm_role_assignment" "aad_acrpush" {
