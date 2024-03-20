@@ -53,3 +53,76 @@ resource "azurerm_key_vault_secret" "BLOB_CONNECTION_STRING" {
   value        = module.StorageAccount.primary_connection_string
   key_vault_id = module.KeyVault.id
 }
+
+resource "azurerm_key_vault_access_policy" "function_app" {
+  key_vault_id = module.KeyVault.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_linux_function_app.function.identity[0].principal_id
+
+  secret_permissions = [
+    "Get",
+    "List"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "web" {
+  key_vault_id = module.KeyVault.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_linux_web_app.web.identity[0].principal_id
+
+  secret_permissions = [
+    "Get",
+    "List"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "enrichment" {
+  key_vault_id = module.KeyVault.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = azurerm_linux_web_app.enrichment.identity[0].principal_id
+
+  secret_permissions = [
+    "Get",
+    "List"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "current_user" {
+  key_vault_id = module.KeyVault.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azurerm_client_config.current.object_id
+
+  key_permissions = [
+    "Backup",
+    "Create",
+    "Decrypt",
+    "Delete",
+    "Encrypt",
+    "Get",
+    "Import",
+    "List",
+    "Purge",
+    "Recover",
+    "Restore",
+    "Sign",
+    "UnwrapKey",
+    "Update",
+    "Verify",
+    "WrapKey",
+    "Release",
+    "Rotate",
+    "GetRotationPolicy",
+    "SetRotationPolicy",
+  ]
+
+  secret_permissions = [
+    "Backup",
+    "Get",
+    "Delete",
+    "List",
+    "Purge",
+    "Recover",
+    "Restore",
+    "Set",
+  ]
+}
