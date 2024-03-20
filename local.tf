@@ -9,7 +9,7 @@ locals {
   app_service_plan_function_name   = "infoasst-func-asp-geprk"
   function_name                    = "infoasst-func-geprk"
   log_analytics_name               = "infoasst-la-geprk"
-  application_insights_name = "infoasst-ai-geprk"
+  application_insights_name        = "infoasst-ai-geprk"
 
   azure_client_id      = "3aff5d4e-1f13-4a7d-947e-612aae549f5d" # Russell's Tenant
   azure_management_url = "https://management.core.windows.net/"
