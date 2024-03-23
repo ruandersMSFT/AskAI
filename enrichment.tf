@@ -77,12 +77,12 @@ resource "azurerm_linux_web_app" "enrichment" {
   app_settings = {
     "APPLICATIONINSIGHTS_CONNECTION_STRING"  = module.ApplicationInsights.connection_string
     "AZURE_BLOB_STORAGE_ACCOUNT"             = module.StorageAccount.name
-    "AZURE_BLOB_STORAGE_CONTAINER"           = "content"
+    "AZURE_BLOB_STORAGE_CONTAINER"           = local.AZURE_BLOB_STORAGE_CONTAINER
     "AZURE_BLOB_STORAGE_ENDPOINT"            = module.StorageAccount.primary_blob_endpoint
     "AZURE_BLOB_STORAGE_KEY"                 = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
     "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"    = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "AZURE_KEY_VAULT_ENDPOINT"               = module.KeyVault.vault_uri
-    "AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME" = "text-embedding-ada-002"
+    "AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME" = local.EMBEDDING_DEPLOYMENT_NAME
     "AZURE_OPENAI_SERVICE"                   = module.cognitive_account_openai.name
     "AZURE_OPENAI_SERVICE_KEY"               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-OPENAI-SERVICE-KEY)"
     "AZURE_SEARCH_INDEX"                     = local.AZURE_SEARCH_INDEX
@@ -97,15 +97,15 @@ resource "azurerm_linux_web_app" "enrichment" {
     "COSMOSDB_TAGS_DATABASE_NAME"            = local.COSMOSDB_TAGS_DATABASE_NAME
     "COSMOSDB_URL"                           = module.CosmosDB.endpoint
     "DEQUEUE_MESSAGE_BATCH_SIZE"             = "3"
-    "EMBEDDINGS_QUEUE"                       = "embeddings-queue"
+    "EMBEDDINGS_QUEUE"                       = local.EMBEDDINGS_QUEUE
     "EMBEDDING_REQUEUE_BACKOFF"              = "60"
     "EMBEDDING_VECTOR_SIZE"                  = "1536"
-    "ENABLE_ORYX_BUILD"                      = "True"
-    "IS_GOV_CLOUD_DEPLOYMENT"                = "False"
+    "ENABLE_ORYX_BUILD"                      = local.ENABLE_ORYX_BUILD
+    "IS_GOV_CLOUD_DEPLOYMENT"                = local.IS_GOV_CLOUD_DEPLOYMENT
     "LOG_LEVEL"                              = "DEBUG"
     "MAX_EMBEDDING_REQUEUE_COUNT"            = "5"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT"         = "true"
-    "TARGET_EMBEDDINGS_MODEL"                = "azure-openai_text-embedding-ada-002"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"         = local.SCM_DO_BUILD_DURING_DEPLOYMENT
+    "TARGET_EMBEDDINGS_MODEL"                = local.TARGET_EMBEDDINGS_MODEL
     "WEBSITES_CONTAINER_START_TIME_LIMIT"    = "600"
   }
 

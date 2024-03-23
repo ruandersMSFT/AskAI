@@ -13,19 +13,19 @@ module "StorageAccount" {
 }
 
 resource "azurerm_storage_container" "content" {
-  name                  = "content"
+  name                  = local.AZURE_BLOB_STORAGE_CONTAINER
   storage_account_name  = module.StorageAccount.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "logs" {
-  name                  = "logs"
+  name                  = local.LOGS_CONTAINER
   storage_account_name  = module.StorageAccount.name
   container_access_type = "private"
 }
 
 resource "azurerm_storage_container" "function" {
-  name                  = "function"
+  name                  = local.FUNCTION_CONTAINER
   storage_account_name  = module.StorageAccount.name
   container_access_type = "private"
 }
@@ -43,37 +43,37 @@ resource "azurerm_storage_container" "website" {
 }
 
 resource "azurerm_storage_queue" "pdf_submit_queue" {
-  name                 = "pdf-submit-queue"
+  name                 = local.PDF_SUBMIT_QUEUE
   storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "pdf_polling_queue" {
-  name                 = "pdf-polling-queue"
+  name                 = local.PDF_POLLING_QUEUE
   storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "non_pdf_submit_queue" {
-  name                 = "non-pdf-submit-queue"
+  name                 = local.NON_PDF_SUBMIT_QUEUE
   storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "media_submit_queue" {
-  name                 = "media-submit-queue"
+  name                 = local.MEDIA_SUBMIT_QUEUE
   storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "text_enrichment_queue" {
-  name                 = "text-enrichment-queue"
+  name                 = local.TEXT_ENRICHMENT_QUEUE
   storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "image_enrichment_queue" {
-  name                 = "image-enrichment-queue"
+  name                 = local.IMAGE_ENRICHMENT_QUEUE
   storage_account_name = module.StorageAccount.name
 }
 
 resource "azurerm_storage_queue" "embeddings_queue" {
-  name                 = "embeddings-queue"
+  name                 = local.EMBEDDINGS_QUEUE
   storage_account_name = module.StorageAccount.name
 }
 

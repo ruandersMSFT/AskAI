@@ -19,7 +19,7 @@ resource "azurerm_linux_web_app" "web" {
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = module.ApplicationInsights.connection_string
     "APPLICATION_TITLE"                     = ""
     "AZURE_BLOB_STORAGE_ACCOUNT"            = module.StorageAccount.name
-    "AZURE_BLOB_STORAGE_CONTAINER"          = "content"
+    "AZURE_BLOB_STORAGE_CONTAINER"          = local.AZURE_BLOB_STORAGE_CONTAINER
     "AZURE_BLOB_STORAGE_ENDPOINT"           = module.StorageAccount.primary_blob_endpoint
     "AZURE_BLOB_STORAGE_KEY"                = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-BLOB-STORAGE-KEY)"
     "AZURE_BLOB_STORAGE_UPLOAD_CONTAINER"   = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
@@ -27,7 +27,7 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_CLIENT_SECRET"                   = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/AZURE-CLIENT-SECRET)"
     "AZURE_KEY_VAULT_ENDPOINT"              = module.KeyVault.vault_uri
     "AZURE_MANAGEMENT_URL"                  = local.azure_management_url
-    "AZURE_OPENAI_CHATGPT_DEPLOYMENT"       = "gpt-35-turbo-16k"
+    "AZURE_OPENAI_CHATGPT_DEPLOYMENT"       = local.AZURE_OPENAI_CHATGPT_DEPLOYMENT
     "AZURE_OPENAI_CHATGPT_MODEL_NAME"       = ""
     "AZURE_OPENAI_CHATGPT_MODEL_VERSION"    = ""
     "AZURE_OPENAI_EMBEDDINGS_MODEL_NAME"    = ""
@@ -41,21 +41,21 @@ resource "azurerm_linux_web_app" "web" {
     "AZURE_SEARCH_SERVICE_KEY"              = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/${local.AZURE_SEARCH_SERVICE_KEY})"
     "AZURE_SUBSCRIPTION_ID"                 = data.azurerm_client_config.current.subscription_id
     "AZURE_TENANT_ID"                       = data.azurerm_client_config.current.tenant_id
-    "CHAT_WARNING_BANNER_TEXT"              = ""
+    "CHAT_WARNING_BANNER_TEXT"              = local.CHAT_WARNING_BANNER_TEXT
     "COSMOSDB_KEY"                          = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/COSMOSDB-KEY)"
     "COSMOSDB_LOG_CONTAINER_NAME"           = local.COSMOSDB_LOG_CONTAINER_NAME
     "COSMOSDB_LOG_DATABASE_NAME"            = local.COSMOSDB_LOG_DATABASE_NAME
     "COSMOSDB_TAGS_CONTAINER_NAME"          = local.COSMOSDB_TAGS_CONTAINER_NAME
     "COSMOSDB_TAGS_DATABASE_NAME"           = local.COSMOSDB_TAGS_DATABASE_NAME
     "COSMOSDB_URL"                          = module.CosmosDB.endpoint
-    "EMBEDDING_DEPLOYMENT_NAME"             = "text-embedding-ada-002"
-    "ENABLE_ORYX_BUILD"                     = "True"
+    "EMBEDDING_DEPLOYMENT_NAME"             = local.EMBEDDING_DEPLOYMENT_NAME
+    "ENABLE_ORYX_BUILD"                     = local.ENABLE_ORYX_BUILD
     "ENRICHMENT_APPSERVICE_NAME"            = azurerm_linux_web_app.enrichment.name
-    "IS_GOV_CLOUD_DEPLOYMENT"               = "False"
-    "QUERY_TERM_LANGUAGE"                   = "English"
-    "SCM_DO_BUILD_DURING_DEPLOYMENT"        = "true"
-    "TARGET_EMBEDDINGS_MODEL"               = "azure-openai_text-embedding-ada-002"
-    "USE_AZURE_OPENAI_EMBEDDINGS"           = "True"
+    "IS_GOV_CLOUD_DEPLOYMENT"               = local.IS_GOV_CLOUD_DEPLOYMENT
+    "QUERY_TERM_LANGUAGE"                   = local.QUERY_TERM_LANGUAGE
+    "SCM_DO_BUILD_DURING_DEPLOYMENT"        = local.SCM_DO_BUILD_DURING_DEPLOYMENT
+    "TARGET_EMBEDDINGS_MODEL"               = local.TARGET_EMBEDDINGS_MODEL
+    "USE_AZURE_OPENAI_EMBEDDINGS"           = local.USE_AZURE_OPENAI_EMBEDDINGS
   }
 
   https_only = true
@@ -98,7 +98,7 @@ resource "azurerm_linux_web_app" "web" {
       ]
       allowed_groups                  = []
       allowed_identities              = []
-      client_id                       = "39188b98-28e5-4e26-8f0d-ac2f5d8068d2"
+      client_id                       = local.active_directory_client_id
       jwt_allowed_client_applications = []
       jwt_allowed_groups              = []
       login_parameters                = {}

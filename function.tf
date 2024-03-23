@@ -87,8 +87,8 @@ resource "azurerm_linux_function_app" "function" {
     "BLOB_CONNECTION_STRING"                     = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/BLOB-CONNECTION-STRING)"
     "BLOB_STORAGE_ACCOUNT"                       = module.StorageAccount.name
     "BLOB_STORAGE_ACCOUNT_ENDPOINT"              = module.StorageAccount.primary_blob_endpoint
-    "BLOB_STORAGE_ACCOUNT_LOG_CONTAINER_NAME"    = "logs"
-    "BLOB_STORAGE_ACCOUNT_OUTPUT_CONTAINER_NAME" = "content"
+    "BLOB_STORAGE_ACCOUNT_LOG_CONTAINER_NAME"    = local.LOGS_CONTAINER
+    "BLOB_STORAGE_ACCOUNT_OUTPUT_CONTAINER_NAME" = local.AZURE_BLOB_STORAGE_CONTAINER
     "BLOB_STORAGE_ACCOUNT_UPLOAD_CONTAINER_NAME" = local.AZURE_BLOB_STORAGE_UPLOAD_CONTAINER
     "CHUNK_TARGET_SIZE"                          = "750"
     "COSMOSDB_KEY"                               = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/COSMOSDB-KEY)"
@@ -97,31 +97,31 @@ resource "azurerm_linux_function_app" "function" {
     "COSMOSDB_TAGS_CONTAINER_NAME"               = local.COSMOSDB_TAGS_CONTAINER_NAME
     "COSMOSDB_TAGS_DATABASE_NAME"                = local.COSMOSDB_TAGS_DATABASE_NAME
     "COSMOSDB_URL"                               = module.CosmosDB.endpoint
-    "EMBEDDINGS_QUEUE"                           = "embeddings-queue"
-    "ENABLE_DEV_CODE"                            = "False"
+    "EMBEDDINGS_QUEUE"                           = local.EMBEDDINGS_QUEUE
+    "ENABLE_DEV_CODE"                            = local.ENABLE_DEV_CODE
     "ENRICHMENT_BACKOFF"                         = "60"
     "ENRICHMENT_ENDPOINT"                        = module.cognitive_account_enrichment.endpoint
     "ENRICHMENT_KEY"                             = "@Microsoft.KeyVault(SecretUri=${module.KeyVault.vault_uri}/secrets/ENRICHMENT-KEY)"
     "ENRICHMENT_LOCATION"                        = local.location
     "ENRICHMENT_NAME"                            = module.cognitive_account_enrichment.name
     "FR_API_VERSION"                             = "2023-07-31"
-    "IMAGE_ENRICHMENT_QUEUE"                     = "image-enrichment-queue"
+    "IMAGE_ENRICHMENT_QUEUE"                     = local.IMAGE_ENRICHMENT_QUEUE
     "MAX_ENRICHMENT_REQUEUE_COUNT"               = "10"
     "MAX_POLLING_REQUEUE_COUNT"                  = "10"
     "MAX_READ_ATTEMPTS"                          = "5"
     "MAX_SECONDS_HIDE_ON_UPLOAD"                 = "300"
     "MAX_SUBMIT_REQUEUE_COUNT"                   = "10"
-    "MEDIA_SUBMIT_QUEUE"                         = "media-submit-queue"
-    "NON_PDF_SUBMIT_QUEUE"                       = "non-pdf-submit-queue"
-    "PDF_POLLING_QUEUE"                          = "pdf-polling-queue"
-    "PDF_SUBMIT_QUEUE"                           = "pdf-submit-queue"
+    "MEDIA_SUBMIT_QUEUE"                         = local.MEDIA_SUBMIT_QUEUE
+    "NON_PDF_SUBMIT_QUEUE"                       = local.NON_PDF_SUBMIT_QUEUE
+    "PDF_POLLING_QUEUE"                          = local.PDF_POLLING_QUEUE
+    "PDF_SUBMIT_QUEUE"                           = local.PDF_SUBMIT_QUEUE
     "PDF_SUBMIT_QUEUE_BACKOFF"                   = "60"
     "POLLING_BACKOFF"                            = "30"
     "POLL_QUEUE_SUBMIT_BACKOFF"                  = "60"
     "SUBMIT_REQUEUE_HIDE_SECONDS"                = "1200"
     "TARGET_PAGES"                               = "ALL"
     "TARGET_TRANSLATION_LANGUAGE"                = "en"
-    "TEXT_ENRICHMENT_QUEUE"                      = "text-enrichment-queue"
+    "TEXT_ENRICHMENT_QUEUE"                      = local.TEXT_ENRICHMENT_QUEUE
   }
 
   connection_string {
