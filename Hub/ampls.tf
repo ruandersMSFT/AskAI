@@ -16,3 +16,4 @@ resource "azurerm_monitor_private_link_scoped_service" "applicationinsights" {
   scope_name          = azurerm_monitor_private_link_scope.example.name
   linked_resource_id  = module.ApplicationInsights.id
 }
+  

@@ -1,5 +1,5 @@
 module "cognitive_account_openai" {
-  source = "./_modules/CognitiveAccount"
+  source = "./../_modules/CognitiveAccount"
 
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
@@ -14,7 +14,7 @@ module "cognitive_account_openai" {
 }
 
 module "cognitive_account_form_recognizer" {
-  source = "./_modules/CognitiveAccount"
+  source = "./../_modules/CognitiveAccount"
 
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
@@ -29,7 +29,7 @@ module "cognitive_account_form_recognizer" {
 }
 
 module "cognitive_account_enrichment" {
-  source = "./_modules/CognitiveAccount"
+  source = "./../_modules/CognitiveAccount"
 
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name

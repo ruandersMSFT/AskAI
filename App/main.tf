@@ -10,7 +10,7 @@ resource "azurerm_resource_group" "example" {
 }
 
 module "LogAnalyticsWorkspace" {
-  source = "./_modules/LogAnalyticsWorkspace"
+  source = "./../_modules/LogAnalyticsWorkspace"
 
   name                = local.log_analytics_name
   location            = azurerm_resource_group.example.location

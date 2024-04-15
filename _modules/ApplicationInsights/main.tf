@@ -8,3 +8,10 @@ resource "azurerm_application_insights" "this" {
 
   tags = var.tags
 }
+
+resource "azurerm_monitor_private_link_scoped_service" "this" {
+  name                = "${var.name}-amplsservice"
+  resource_group_name = azurerm_monitor_private_link_scope.example.resource_group_name
+  scope_name          = azurerm_monitor_private_link_scope.example.name
+  linked_resource_id  = azurerm_application_insights.this.id
+}

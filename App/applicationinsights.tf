@@ -1,5 +1,5 @@
 module "ApplicationInsights" {
-  source = "./_modules/ApplicationInsights"
+  source = "./../_modules/ApplicationInsights"
 
   name                = local.application_insights_name
   location            = azurerm_resource_group.example.location

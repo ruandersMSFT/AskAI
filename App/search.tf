@@ -1,5 +1,5 @@
 module "SearchService" {
-  source = "./_modules/SearchService"
+  source = "./../_modules/SearchService"
 
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name

@@ -1,5 +1,5 @@
 module "KeyVault" {
-  source = "./_modules/KeyVault"
+  source = "./../_modules/KeyVault"
 
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
