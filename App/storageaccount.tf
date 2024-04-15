@@ -4,6 +4,7 @@ module "StorageAccount" {
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
+  delete_retention_policy_days = 7
   name                     = "infoasststoregeprk"
   account_tier             = "Standard"
   account_replication_type = "LRS"
@@ -83,6 +84,7 @@ module "StorageAccountMedia" {
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
+  delete_retention_policy_days = 7
   name                     = "infoasststoremediageprk"
   account_tier             = "Standard"
   account_replication_type = "LRS"

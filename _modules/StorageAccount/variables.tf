@@ -19,6 +19,12 @@ variable "allow_nested_items_to_be_public" {
   default = false
 }
 
+variable "delete_retention_policy_days" {
+  type = number
+  default = null
+  description = "(Optional) Specifies the number of days that the blob should be retained, between 1 and 365 days. Defaults to 7"
+}
+
 variable "public_network_access_enabled" {
   type    = bool
   default = false

@@ -8,8 +8,11 @@ resource "azurerm_storage_account" "this" {
   public_network_access_enabled   = var.public_network_access_enabled
 
   blob_properties {
-    delete_retention_policy {
-      days = 7
+      dynamic "delete_retention_policy" {
+      for_each = var.delete_retention_policy_days == null ? [] : ["fake"]
+      content {
+        days = var.delete_retention_policy_days
+      }
     }
   }
 
