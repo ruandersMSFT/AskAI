@@ -4,6 +4,13 @@ module "StorageAccount" {
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
+  cors_rule = {
+    allowed_headers = [ "*" ]
+    allowed_methods = [ "GET", "PUT", "OPTIONS", "POST", "PATCH", "HEAD" ]
+    allowed_origins = [ "*" ]
+    exposed_headers = [ "*" ]
+    max_age_in_seconds = 86400
+  }
   delete_retention_policy_days = 7
   name                     = "infoasststoregeprk"
   account_tier             = "Standard"
@@ -84,6 +91,13 @@ module "StorageAccountMedia" {
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
+  cors_rule = {
+    allowed_headers = [ "*" ]
+    allowed_methods = [ "GET", "PUT", "OPTIONS", "POST", "PATCH", "HEAD" ]
+    allowed_origins = [ "*" ]
+    exposed_headers = [ "*" ]
+    max_age_in_seconds = 86400
+  }
   delete_retention_policy_days = 7
   name                     = "infoasststoremediageprk"
   account_tier             = "Standard"

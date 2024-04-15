@@ -19,6 +19,17 @@ variable "allow_nested_items_to_be_public" {
   default = false
 }
 
+variable "cors_rule" {
+  type = object({
+    allowed_headers = list(string)
+    allowed_methods = list(string)
+    allowed_origins = list(string)
+    exposed_headers = list(string)
+    max_age_in_seconds = number
+  })
+  default = null
+}
+
 variable "delete_retention_policy_days" {
   type = number
   default = null

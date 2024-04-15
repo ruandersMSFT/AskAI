@@ -8,7 +8,18 @@ resource "azurerm_storage_account" "this" {
   public_network_access_enabled   = var.public_network_access_enabled
 
   blob_properties {
-      dynamic "delete_retention_policy" {
+    dynamic "cors_rule" {
+      for_each = var.cors_rule == null ? [] : ["fake"]
+      content {
+        allowed_headers = var.cors_rule.allowed_headers
+        allowed_methods = var.cors_rule.allowed_methods
+        allowed_origins = var.cors_rule.allowed_origins
+        exposed_headers = var.cors_rule.exposed_headers
+        max_age_in_seconds = var.cors_rule.max_age_in_seconds
+      }
+    }
+
+    dynamic "delete_retention_policy" {
       for_each = var.delete_retention_policy_days == null ? [] : ["fake"]
       content {
         days = var.delete_retention_policy_days
