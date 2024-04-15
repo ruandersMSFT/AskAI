@@ -2,7 +2,7 @@ variable "name" {
   type = string
 }
 
-variable "enable_automatic_failover" {
+variable "automatic_failover_enabled" {
   type = bool
   default = true
 }
