@@ -3,6 +3,23 @@ variable "custom_subdomain_name" {
   default = null
 }
 
+variable "deployments" {
+  type = list(object({
+    model = object({
+      format = string
+      name = string
+      version = string
+    })
+    name = string
+    rai_policy_name = string
+    scale = object({
+      type = string
+      capacity = number
+    })
+  }))
+  default = []
+}
+
 variable "name" {
   type = string
 }

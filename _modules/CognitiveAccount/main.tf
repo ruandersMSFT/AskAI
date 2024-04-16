@@ -11,6 +11,26 @@ resource "azurerm_cognitive_account" "this" {
   tags = var.tags
 }
 
+resource "azurerm_cognitive_deployment" "this" {
+  for_each = {for i, v in var.deployments:  i => v}
+
+  name                 = each.value.name
+  cognitive_account_id = azurerm_cognitive_account.this.id
+
+  model {
+    format  = each.value.model.format
+    name    = each.value.model.name
+    version = each.value.model.version
+  }
+
+  rai_policy_name = each.value.rai_policy_name
+  
+  scale {
+    type = each.value.scale.type
+    capacity = each.value.scale.capacity
+  }
+}
+
 module "PrivateEndpoint" {
   source = "../PrivateEndpoint"
 

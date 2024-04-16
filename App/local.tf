@@ -41,7 +41,7 @@ locals {
   USE_AZURE_OPENAI_EMBEDDINGS     = "True"
   SCM_DO_BUILD_DURING_DEPLOYMENT  = "true"
   ENABLE_ORYX_BUILD               = "True"
-  ENABLE_DEV_CODE = "False"
+  ENABLE_DEV_CODE                 = "False"
 
   EMBEDDINGS_QUEUE       = "embeddings-queue"
   IMAGE_ENRICHMENT_QUEUE = "image-enrichment-queue"

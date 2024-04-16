@@ -6,38 +6,38 @@ module "StorageAccount" {
 
   containers = [
     {
-      name = local.AZURE_BLOB_STORAGE_CONTAINER,
+      name                  = local.AZURE_BLOB_STORAGE_CONTAINER,
       container_access_type = "private"
     },
     {
-      name = local.LOGS_CONTAINER,
+      name                  = local.LOGS_CONTAINER,
       container_access_type = "private"
     },
     {
-      name = local.FUNCTION_CONTAINER,
+      name                  = local.FUNCTION_CONTAINER,
       container_access_type = "private"
     },
     {
-      name = "upload",
+      name                  = "upload",
       container_access_type = "private"
     },
     {
-      name = "website",
+      name                  = "website",
       container_access_type = "private"
     }
   ]
   cors_rule = {
-    allowed_headers = [ "*" ]
-    allowed_methods = [ "GET", "PUT", "OPTIONS", "POST", "PATCH", "HEAD" ]
-    allowed_origins = [ "*" ]
-    exposed_headers = [ "*" ]
+    allowed_headers    = ["*"]
+    allowed_methods    = ["GET", "PUT", "OPTIONS", "POST", "PATCH", "HEAD"]
+    allowed_origins    = ["*"]
+    exposed_headers    = ["*"]
     max_age_in_seconds = 86400
   }
   delete_retention_policy_days = 7
-  name                     = "infoasststoregeprk"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  private_dns_zone_ids     = [azurerm_private_dns_zone.example.id]
+  name                         = "infoasststoregeprk"
+  account_tier                 = "Standard"
+  account_replication_type     = "LRS"
+  private_dns_zone_ids         = [azurerm_private_dns_zone.example.id]
   queues = [
     {
       name = local.PDF_SUBMIT_QUEUE
@@ -61,8 +61,8 @@ module "StorageAccount" {
       name = local.EMBEDDINGS_QUEUE
     }
   ]
-  subnet_id                = "${azurerm_virtual_network.example.id}/subnets/subnet1"
-  tags                     = local.tags
+  subnet_id = "${azurerm_virtual_network.example.id}/subnets/subnet1"
+  tags      = local.tags
 }
 
 module "StorageAccountMedia" {
@@ -72,18 +72,18 @@ module "StorageAccountMedia" {
   resource_group_name = azurerm_resource_group.example.name
 
   cors_rule = {
-    allowed_headers = [ "*" ]
-    allowed_methods = [ "GET", "PUT", "OPTIONS", "POST", "PATCH", "HEAD" ]
-    allowed_origins = [ "*" ]
-    exposed_headers = [ "*" ]
+    allowed_headers    = ["*"]
+    allowed_methods    = ["GET", "PUT", "OPTIONS", "POST", "PATCH", "HEAD"]
+    allowed_origins    = ["*"]
+    exposed_headers    = ["*"]
     max_age_in_seconds = 86400
   }
   delete_retention_policy_days = 7
-  name                     = "infoasststoremediageprk"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  private_dns_zone_ids     = [azurerm_private_dns_zone.example.id]
-  subnet_id                = "${azurerm_virtual_network.example.id}/subnets/subnet1"
-  tags                     = local.tags
+  name                         = "infoasststoremediageprk"
+  account_tier                 = "Standard"
+  account_replication_type     = "LRS"
+  private_dns_zone_ids         = [azurerm_private_dns_zone.example.id]
+  subnet_id                    = "${azurerm_virtual_network.example.id}/subnets/subnet1"
+  tags                         = local.tags
 }
 
