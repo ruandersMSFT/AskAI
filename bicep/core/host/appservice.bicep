@@ -86,47 +86,6 @@ resource appService 'Microsoft.Web/sites@2022-03-01' = {
       !empty(applicationInsightsName) ? { APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString } : {},
       !empty(keyVaultName) ? { AZURE_KEY_VAULT_ENDPOINT: keyVault.properties.vaultUri } : {})
   }
-
-  resource configLogs 'config' = {
-    name: 'logs'
-    properties: {
-      applicationLogs: { fileSystem: { level: 'Verbose' } }
-      detailedErrorMessages: { enabled: true }
-      failedRequestsTracing: { enabled: true }
-      httpLogs: { fileSystem: { enabled: true, retentionInDays: 1, retentionInMb: 35 } }
-    }
-    dependsOn: [
-      configAppSettings
-    ]
-  }
-
-  resource authSettingsV2 'config' = {
-    name: 'authsettingsV2'
-    properties: {
-      globalValidation: {
-        unauthenticatedClientAction: 'RedirectToLoginPage'
-        redirectToProvider: 'AzureActiveDirectory'
-        requireAuthentication: true
-      }
-      identityProviders: {
-        azureActiveDirectory: {
-          enabled: true
-          registration: {
-            openIdIssuer: 'https://sts.windows.net/${tenantId}/v2.0'
-            clientId: aadClientId
-          }
-          validation: {
-            allowedAudiences: [
-              'api://${name}'
-            ]
-            defaultAuthorizationPolicy: {
-              allowedApplications: []
-            }
-          }
-        }
-      }
-    }
-  }
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = if (!(empty(keyVaultName))) {

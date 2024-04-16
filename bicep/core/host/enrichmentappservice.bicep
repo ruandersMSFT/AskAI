@@ -77,19 +77,6 @@ properties: {
       !empty(applicationInsightsName) ? { APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsights.properties.ConnectionString } : {},
       !empty(keyVaultName) ? { AZURE_KEY_VAULT_ENDPOINT: keyVault.properties.vaultUri } : {})
   }
-
-  resource configLogs 'config' = {
-    name: 'logs'
-    properties: {
-      applicationLogs: { fileSystem: { level: 'Verbose' } }
-      detailedErrorMessages: { enabled: true }
-      failedRequestsTracing: { enabled: true }
-      httpLogs: { fileSystem: { enabled: true, retentionInDays: 1, retentionInMb: 35 } }
-    }
-    dependsOn: [
-      configAppSettings
-    ]
-  }
 }
 
 output name string = appService.name
