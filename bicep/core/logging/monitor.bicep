@@ -1,3 +1,7 @@
+# https://learn.microsoft.com/en-us/azure/templates/microsoft.insights/workbooktemplates?pivots=deployment-language-terraform
+
+
+
 param location string = resourceGroup().location
 param logWorkbookName string = ''
 param componentResource string = ''
