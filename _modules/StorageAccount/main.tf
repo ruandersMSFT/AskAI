@@ -30,6 +30,21 @@ resource "azurerm_storage_account" "this" {
   tags = var.tags
 }
 
+resource "azurerm_storage_container" "this" {
+  for_each = {for i, v in var.containers:  i => v}
+
+  name                  = each.value.name
+  storage_account_name  = azurerm_storage_account.this.name
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_queue" "this" {
+  for_each = {for i, v in var.queues:  i => v}
+
+  name                  = each.value.name
+  storage_account_name  = azurerm_storage_account.this.name
+}
+
 module "PrivateEndpoint" {
   source = "../PrivateEndpoint"
 

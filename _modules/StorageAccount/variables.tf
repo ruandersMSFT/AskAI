@@ -19,6 +19,14 @@ variable "allow_nested_items_to_be_public" {
   default = false
 }
 
+variable "containers" {
+  type = list(object({
+    name = string
+    container_access_type = string
+  }))
+  default = []
+}
+
 variable "cors_rule" {
   type = object({
     allowed_headers = list(string)
@@ -44,6 +52,13 @@ variable "public_network_access_enabled" {
 variable "private_dns_zone_ids" {
   type        = list(any)
   description = "Private DNS Zone ID(s) for the Private Endpoint"
+}
+
+variable "queues" {
+  type = list(object({
+    name = string
+  }))
+  default = []
 }
 
 variable "resource_group_name" {
