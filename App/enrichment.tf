@@ -170,3 +170,45 @@ resource "azurerm_linux_web_app" "enrichment" {
     }
   }
 }
+
+resource "azurerm_monitor_diagnostic_setting" "enrichment" {
+  name                       = "enrichment"
+  target_resource_id         = azurerm_linux_web_app.enrichment.id
+  log_analytics_workspace_id = module.LogAnalyticsWorkspace.id
+
+  log {
+    category = "AppServiceAppLogs"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+
+  log {
+    category = "AppServicePlatformLogs"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+
+  log {
+    category = "AppServiceConsoleLogs"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+}

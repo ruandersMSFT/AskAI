@@ -152,54 +152,6 @@ resource keyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2019-09-
   }
 }
 
-resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = if (!empty(applicationInsightsName)) {
-  name: applicationInsightsName
-}
-
-resource diagnosticLogs 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: appService.name
-  scope: appService
-  properties: {
-    workspaceId: logAnalyticsWorkspaceResourceId
-    logs: [
-      {
-        category: 'AppServiceAppLogs'
-        enabled: true
-        retentionPolicy: {
-          days: 0 
-          enabled: true 
-        }
-      }
-      {
-        category: 'AppServicePlatformLogs'
-        enabled: true
-        retentionPolicy:  {
-          days: 0
-          enabled: true 
-        }
-      }
-      {
-        category: 'AppServiceConsoleLogs'
-        enabled: true
-        retentionPolicy: {
-          days: 0
-          enabled: true 
-        }
-      }        
-    ]
-    metrics: [
-      {
-        category: 'AllMetrics'
-        enabled: true
-        retentionPolicy: {
-          days: 0
-          enabled: true 
-        }
-      }
-    ]
-  }
-}
-
 output identityPrincipalId string = managedIdentity ? appService.identity.principalId : ''
 output name string = appService.name
 output uri string = 'https://${appService.properties.defaultHostName}'

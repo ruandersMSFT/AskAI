@@ -163,3 +163,45 @@ resource "azurerm_linux_web_app" "web" {
 
   tags = local.tags
 }
+
+resource "azurerm_monitor_diagnostic_setting" "web" {
+  name                       = "web"
+  target_resource_id         = azurerm_linux_web_app.web.id
+  log_analytics_workspace_id = module.LogAnalyticsWorkspace.id
+
+  log {
+    category = "AppServiceAppLogs"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+
+  log {
+    category = "AppServicePlatformLogs"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+
+  log {
+    category = "AppServiceConsoleLogs"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+
+  metric {
+    category = "AllMetrics"
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+}
