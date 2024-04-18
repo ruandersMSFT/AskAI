@@ -34,7 +34,7 @@ module "StorageAccount" {
     max_age_in_seconds = 86400
   }
   delete_retention_policy_days = 7
-  name                         = "infoasststoregeprk"
+  name                         = "infoasststore"
   account_tier                 = "Standard"
   account_replication_type     = "LRS"
   private_dns_zone_ids_blob    = [local.private_dns_zone_id_storage_blob]
@@ -79,7 +79,7 @@ module "StorageAccountMedia" {
     max_age_in_seconds = 86400
   }
   delete_retention_policy_days = 7
-  name                         = "infoasststoremediageprk"
+  name                         = "infoasststoremedia"
   account_tier                 = "Standard"
   account_replication_type     = "LRS"
   private_dns_zone_ids_blob    = [local.private_dns_zone_id_storage_blob]

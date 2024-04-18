@@ -23,14 +23,14 @@ module "LogAnalyticsWorkspace" {
 
 # todo russell this template_data is not correct
 resource "azurerm_application_insights_workbook_template" "example" {
-  name                = "infoasst-lw-geprk"
+  name                = "infoasst-lw"
   resource_group_name = azurerm_resource_group.example.name
   location            = azurerm_resource_group.example.location
   priority            = 1
 
   galleries {
     category      = "Deployed Template"
-    name          = "infoasst-lw-geprk"
+    name          = "infoasst-lw"
     order         = 1
     resource_type = "Azure Monitor"
     type          = "workbook"

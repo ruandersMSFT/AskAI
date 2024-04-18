@@ -4,7 +4,7 @@ module "KeyVault" {
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
-  name                            = "infoasst-kv-geprk"
+  name                            = "infoasst-kv"
   enabled_for_template_deployment = true
   private_dns_zone_ids            = [local.private_dns_zone_id_key_vault]
   subnet_id                       = "${azurerm_virtual_network.example.id}/subnets/subnet1"
