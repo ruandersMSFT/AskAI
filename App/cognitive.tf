@@ -35,7 +35,7 @@ module "cognitive_account_openai" {
   ]
   kind                 = "OpenAI"
   name                 = "infoasst-aoai-geprk"
-  private_dns_zone_ids = [azurerm_private_dns_zone.example.id]
+  private_dns_zone_ids = [local.private_dns_zone_id_cognitiveservices]
   sku_name             = "S0"
   subnet_id            = "${azurerm_virtual_network.example.id}/subnets/subnet1"
   tags                 = local.tags
@@ -50,7 +50,7 @@ module "cognitive_account_form_recognizer" {
   custom_subdomain_name = "infoasst-fr-geprk"
   kind                  = "FormRecognizer"
   name                  = "infoasst-fr-geprk"
-  private_dns_zone_ids  = [azurerm_private_dns_zone.example.id]
+  private_dns_zone_ids  = [local.private_dns_zone_id_cognitiveservices]
   sku_name              = "S0"
   subnet_id             = "${azurerm_virtual_network.example.id}/subnets/subnet1"
   tags                  = local.tags
@@ -64,7 +64,7 @@ module "cognitive_account_enrichment" {
 
   kind                 = "CognitiveServices"
   name                 = "infoasst-enrichment-cog-geprk"
-  private_dns_zone_ids = [azurerm_private_dns_zone.example.id]
+  private_dns_zone_ids = [local.private_dns_zone_id_cognitiveservices]
   sku_name             = "S0"
   subnet_id            = "${azurerm_virtual_network.example.id}/subnets/subnet1"
   tags                 = local.tags

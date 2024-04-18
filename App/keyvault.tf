@@ -6,7 +6,7 @@ module "KeyVault" {
 
   name                            = "infoasst-kv-geprk"
   enabled_for_template_deployment = true
-  private_dns_zone_ids            = [azurerm_private_dns_zone.example.id]
+  private_dns_zone_ids            = [local.private_dns_zone_id_key_vault]
   subnet_id                       = "${azurerm_virtual_network.example.id}/subnets/subnet1"
   tags                            = local.tags
   tenant_id                       = data.azurerm_client_config.current.tenant_id

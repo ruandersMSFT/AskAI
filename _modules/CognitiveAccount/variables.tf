@@ -1,19 +1,19 @@
 variable "custom_subdomain_name" {
-  type = string
+  type    = string
   default = null
 }
 
 variable "deployments" {
   type = list(object({
     model = object({
-      format = string
-      name = string
+      format  = string
+      name    = string
       version = string
     })
-    name = string
+    name            = string
     rai_policy_name = string
     scale = object({
-      type = string
+      type     = string
       capacity = number
     })
   }))
@@ -33,7 +33,7 @@ variable "location" {
 }
 
 variable "kind" {
-  type    = string
+  type = string
 }
 
 variable "public_network_access_enabled" {

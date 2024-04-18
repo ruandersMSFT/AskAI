@@ -37,7 +37,7 @@ module "StorageAccount" {
   name                         = "infoasststoregeprk"
   account_tier                 = "Standard"
   account_replication_type     = "LRS"
-  private_dns_zone_ids         = [azurerm_private_dns_zone.example.id]
+  private_dns_zone_ids_blob    = [local.private_dns_zone_id_storage_blob]
   queues = [
     {
       name = local.PDF_SUBMIT_QUEUE
@@ -82,7 +82,7 @@ module "StorageAccountMedia" {
   name                         = "infoasststoremediageprk"
   account_tier                 = "Standard"
   account_replication_type     = "LRS"
-  private_dns_zone_ids         = [azurerm_private_dns_zone.example.id]
+  private_dns_zone_ids_blob    = [local.private_dns_zone_id_storage_blob]
   subnet_id                    = "${azurerm_virtual_network.example.id}/subnets/subnet1"
   tags                         = local.tags
 }

@@ -6,7 +6,7 @@ module "CosmosDB" {
 
   name                 = "infoasst-cosmos-geprk"
   kind                 = "GlobalDocumentDB"
-  private_dns_zone_ids = [azurerm_private_dns_zone.example.id]
+  private_dns_zone_ids = [local.private_dns_zone_id_cosmos]
   subnet_id            = "${azurerm_virtual_network.example.id}/subnets/subnet1"
   tags                 = local.tags
 }

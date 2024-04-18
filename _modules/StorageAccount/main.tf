@@ -11,10 +11,10 @@ resource "azurerm_storage_account" "this" {
     dynamic "cors_rule" {
       for_each = var.cors_rule == null ? [] : ["fake"]
       content {
-        allowed_headers = var.cors_rule.allowed_headers
-        allowed_methods = var.cors_rule.allowed_methods
-        allowed_origins = var.cors_rule.allowed_origins
-        exposed_headers = var.cors_rule.exposed_headers
+        allowed_headers    = var.cors_rule.allowed_headers
+        allowed_methods    = var.cors_rule.allowed_methods
+        allowed_origins    = var.cors_rule.allowed_origins
+        exposed_headers    = var.cors_rule.exposed_headers
         max_age_in_seconds = var.cors_rule.max_age_in_seconds
       }
     }
@@ -31,7 +31,7 @@ resource "azurerm_storage_account" "this" {
 }
 
 resource "azurerm_storage_container" "this" {
-  for_each = {for i, v in var.containers:  i => v}
+  for_each = { for i, v in var.containers : i => v }
 
   name                  = each.value.name
   storage_account_name  = azurerm_storage_account.this.name
@@ -39,10 +39,10 @@ resource "azurerm_storage_container" "this" {
 }
 
 resource "azurerm_storage_queue" "this" {
-  for_each = {for i, v in var.queues:  i => v}
+  for_each = { for i, v in var.queues : i => v }
 
-  name                  = each.value.name
-  storage_account_name  = azurerm_storage_account.this.name
+  name                 = each.value.name
+  storage_account_name = azurerm_storage_account.this.name
 }
 
 module "PrivateEndpoint" {
@@ -51,7 +51,7 @@ module "PrivateEndpoint" {
   location                       = var.location
   name                           = var.name
   private_connection_resource_id = azurerm_storage_account.this.id
-  private_dns_zone_ids           = var.private_dns_zone_ids
+  private_dns_zone_ids           = var.private_dns_zone_ids_blob
   resource_group_name            = var.resource_group_name
   subnet_id                      = var.subnet_id
   subresource_names              = ["blob", "blob_secondary"]

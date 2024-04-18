@@ -3,7 +3,7 @@ variable "name" {
 }
 
 variable "automatic_failover_enabled" {
-  type = bool
+  type    = bool
   default = true
 }
 

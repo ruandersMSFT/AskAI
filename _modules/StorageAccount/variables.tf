@@ -21,7 +21,7 @@ variable "allow_nested_items_to_be_public" {
 
 variable "containers" {
   type = list(object({
-    name = string
+    name                  = string
     container_access_type = string
   }))
   default = []
@@ -29,18 +29,18 @@ variable "containers" {
 
 variable "cors_rule" {
   type = object({
-    allowed_headers = list(string)
-    allowed_methods = list(string)
-    allowed_origins = list(string)
-    exposed_headers = list(string)
+    allowed_headers    = list(string)
+    allowed_methods    = list(string)
+    allowed_origins    = list(string)
+    exposed_headers    = list(string)
     max_age_in_seconds = number
   })
   default = null
 }
 
 variable "delete_retention_policy_days" {
-  type = number
-  default = null
+  type        = number
+  default     = null
   description = "(Optional) Specifies the number of days that the blob should be retained, between 1 and 365 days. Defaults to 7"
 }
 
@@ -49,9 +49,9 @@ variable "public_network_access_enabled" {
   default = false
 }
 
-variable "private_dns_zone_ids" {
+variable "private_dns_zone_ids_blob" {
   type        = list(any)
-  description = "Private DNS Zone ID(s) for the Private Endpoint"
+  description = "Private DNS Zone ID(s) for the Blob Private Endpoint"
 }
 
 variable "queues" {

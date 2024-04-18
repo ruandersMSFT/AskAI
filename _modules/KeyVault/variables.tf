@@ -36,12 +36,12 @@ variable "resource_group_name" {
 }
 
 variable "soft_delete_retention_days" {
-  type = number
+  type    = number
   default = 90
 }
 
 variable "sku_name" {
-  type = string
+  type    = string
   default = "premium" # premium for HSM Backed
 }
 

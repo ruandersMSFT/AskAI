@@ -51,6 +51,12 @@ locals {
   PDF_POLLING_QUEUE      = "pdf-polling-queue"
   TEXT_ENRICHMENT_QUEUE  = "text-enrichment-queue"
 
+  private_dns_zone_id_cognitiveservices = "/subscriptions/12345678-1234-9876-4563-123456789012/resourceGroups/example-resource-group/providers/Microsoft.Network/privateDnsZones/privateDnsZoneValue"
+  private_dns_zone_id_cosmos            = "/subscriptions/12345678-1234-9876-4563-123456789012/resourceGroups/example-resource-group/providers/Microsoft.Network/privateDnsZones/privateDnsZoneValue"
+  private_dns_zone_id_key_vault         = "/subscriptions/12345678-1234-9876-4563-123456789012/resourceGroups/example-resource-group/providers/Microsoft.Network/privateDnsZones/privateDnsZoneValue"
+  private_dns_zone_id_search            = "/subscriptions/12345678-1234-9876-4563-123456789012/resourceGroups/example-resource-group/providers/Microsoft.Network/privateDnsZones/privateDnsZoneValue"
+  private_dns_zone_id_storage_blob      = "/subscriptions/12345678-1234-9876-4563-123456789012/resourceGroups/example-resource-group/providers/Microsoft.Network/privateDnsZones/privateDnsZoneValue"
+
   tags = {
     "FISMA_Id"      = "8675309"
     "TerraformRepo" = "AskJenny"

@@ -1,9 +1,9 @@
 resource "azurerm_cognitive_account" "this" {
-  name                  = var.name
-  location              = var.location
-  resource_group_name   = var.resource_group_name
-  kind                  = var.kind
-  custom_subdomain_name = var.custom_subdomain_name
+  name                          = var.name
+  location                      = var.location
+  resource_group_name           = var.resource_group_name
+  kind                          = var.kind
+  custom_subdomain_name         = var.custom_subdomain_name
   public_network_access_enabled = var.public_network_access_enabled
 
   sku_name = var.sku_name
@@ -12,7 +12,7 @@ resource "azurerm_cognitive_account" "this" {
 }
 
 resource "azurerm_cognitive_deployment" "this" {
-  for_each = {for i, v in var.deployments:  i => v}
+  for_each = { for i, v in var.deployments : i => v }
 
   name                 = each.value.name
   cognitive_account_id = azurerm_cognitive_account.this.id
@@ -24,9 +24,9 @@ resource "azurerm_cognitive_deployment" "this" {
   }
 
   rai_policy_name = each.value.rai_policy_name
-  
+
   scale {
-    type = each.value.scale.type
+    type     = each.value.scale.type
     capacity = each.value.scale.capacity
   }
 }
