@@ -3,6 +3,10 @@ locals {
   environment = "d"
   application = "askai"
 
+  form_recognizer_name = "${local.environment}-${local.application}-formrecognizer"
+  openai_name = "${local.environment}-${local.application}-openai"
+  enrichment_name = "${local.environment}-${local.application}-enrichment"
+  key_vault_name = "${local.environment}-${local.application}-kv"
   search_service_name              = "${local.environment}-${local.application}-search"
   web_app_name                     = "${local.environment}-${local.application}-web"
   app_service_plan_web_name        = "${local.environment}-${local.application}-asp"
@@ -13,6 +17,10 @@ locals {
   log_analytics_name               = "${local.environment}-${local.application}-la"
   application_insights_name        = "${local.environment}-${local.application}-ai"
   app_service_environment_name     = "${local.environment}-${local.application}-asev3"
+  cosmos_db_name = "${local.environment}-${local.application}-cosmos"
+  storage_name = "${local.environment}${local.application}storage"
+  storage_media_name = "${local.environment}${local.application}media"
+  
 
   azure_client_id            = "3aff5d4e-1f13-4a7d-947e-612aae549f5d" # Russell's Tenant
   active_directory_client_id = "39188b98-28e5-4e26-8f0d-ac2f5d8068d2" # Russell's Tenant

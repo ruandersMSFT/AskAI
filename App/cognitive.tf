@@ -4,7 +4,7 @@ module "cognitive_account_openai" {
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
-  custom_subdomain_name = "infoasst-aoai"
+  custom_subdomain_name = local.openai_name
   deployments = [
     {
       model = {
@@ -34,7 +34,7 @@ module "cognitive_account_openai" {
     }
   ]
   kind                 = "OpenAI"
-  name                 = "infoasst-aoai"
+  name                 = local.openai_name
   private_dns_zone_ids = [local.private_dns_zone_id_cognitiveservices]
   sku_name             = "S0"
   subnet_id            = "${azurerm_virtual_network.example.id}/subnets/subnet1"
@@ -47,9 +47,9 @@ module "cognitive_account_form_recognizer" {
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 
-  custom_subdomain_name = "infoasst-fr"
+  custom_subdomain_name = local.form_recognizer_name
   kind                  = "FormRecognizer"
-  name                  = "infoasst-fr"
+  name                  = local.form_recognizer_name
   private_dns_zone_ids  = [local.private_dns_zone_id_cognitiveservices]
   sku_name              = "S0"
   subnet_id             = "${azurerm_virtual_network.example.id}/subnets/subnet1"
@@ -63,7 +63,7 @@ module "cognitive_account_enrichment" {
   resource_group_name = azurerm_resource_group.example.name
 
   kind                 = "CognitiveServices"
-  name                 = "infoasst-enrichment-cog"
+  name                 = local.enrichment_name
   private_dns_zone_ids = [local.private_dns_zone_id_cognitiveservices]
   sku_name             = "S0"
   subnet_id            = "${azurerm_virtual_network.example.id}/subnets/subnet1"
