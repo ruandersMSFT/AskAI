@@ -137,8 +137,8 @@ resource "azurerm_linux_function_app" "function" {
   site_config {
     always_on                               = true
     app_scale_limit                         = 0
-    application_insights_connection_string  = module.subscriptionInsights.connection_string
-    application_insights_key                = module.subscriptionInsights.instrumentation_key
+    application_insights_connection_string  = module.ApplicationInsights.connection_string
+    application_insights_key                = module.ApplicationInsights.instrumentation_key
     container_registry_use_managed_identity = false
     default_documents = [
       "Default.htm",

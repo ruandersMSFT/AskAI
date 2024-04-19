@@ -75,7 +75,7 @@ resource "azurerm_linux_web_app" "enrichment" {
   service_plan_id     = azurerm_service_plan.enrichment.id
 
   app_settings = {
-    "APPLICATIONINSIGHTS_CONNECTION_STRING"  = module.subscriptionInsights.connection_string
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"  = module.ApplicationInsights.connection_string
     "AZURE_BLOB_STORAGE_ACCOUNT"             = module.StorageAccount.name
     "AZURE_BLOB_STORAGE_CONTAINER"           = local.AZURE_BLOB_STORAGE_CONTAINER
     "AZURE_BLOB_STORAGE_ENDPOINT"            = module.StorageAccount.primary_blob_endpoint

@@ -12,10 +12,10 @@ resource "azurerm_monitor_private_link_scoped_service" "loganalytics" {
   linked_resource_id  = module.LogAnalyticsWorkspace.id
 }
 
-resource "azurerm_monitor_private_link_scoped_service" "applicationinsights" {
+resource "azurerm_monitor_private_link_scoped_service" "ApplicationInsights" {
   name                = "applicationinsights-amplsservice"
   resource_group_name = azurerm_monitor_private_link_scope.example.resource_group_name
   scope_name          = azurerm_monitor_private_link_scope.example.name
-  linked_resource_id  = module.subscriptionInsights.id
+  linked_resource_id  = module.ApplicationInsights.id
 }
   
