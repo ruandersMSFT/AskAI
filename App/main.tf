@@ -3,7 +3,7 @@
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_resource_group" "example" {
-  name     = "${local.environment}-${local.application}-rg"
+  name     = "${local.environment}-${local.subscription}-rg"
   location = local.location
 
   tags = local.tags

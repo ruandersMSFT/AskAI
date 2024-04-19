@@ -15,8 +15,8 @@ resource "azurerm_linux_web_app" "web" {
   service_plan_id     = azurerm_service_plan.web.id
 
   app_settings = {
-    "APPINSIGHTS_INSTRUMENTATIONKEY"        = module.ApplicationInsights.instrumentation_key
-    "APPLICATIONINSIGHTS_CONNECTION_STRING" = module.ApplicationInsights.connection_string
+    "APPINSIGHTS_INSTRUMENTATIONKEY"        = module.subscriptionInsights.instrumentation_key
+    "APPLICATIONINSIGHTS_CONNECTION_STRING" = module.subscriptionInsights.connection_string
     "APPLICATION_TITLE"                     = ""
     "AZURE_BLOB_STORAGE_ACCOUNT"            = module.StorageAccount.name
     "AZURE_BLOB_STORAGE_CONTAINER"          = local.AZURE_BLOB_STORAGE_CONTAINER
